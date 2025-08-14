@@ -33,3 +33,8 @@ Initial thoughts:
 * Ok so this isn't going great. I'm going to commit the current state, including some debugging. And have another go - but this time I'll try to predict the "value" of making a move, instead of just whether or not it's a good one. Gemini seems to suggest that this could be along the lines of Q-learning, which I should look up.
 * I suspect I shouldn't just reward "not losing" states, but should reward flags. And maybe I should actually change the board to give you a win state if you've flagged all of the mines, and a lose state if you've flagged a non-mine.
 
+* Something I really should have done before is playing off the model against random. All play-throughs look bad to a human player who knows the game; but if the model is consistently out-lasting random (even if not winning the game), then it's presumably hit some medium level of success.
+* Actually doing this is quite promising. With a couple of different random seeds I'm seeing:
+    - Model wins: 794, RNG wins: 55, Draws: 151
+    - Model wins: 803, RNG wins: 55, Draws: 142
+ - ...so it's not good per se, but it's better than random. (Random against itself with a different seed is pretty even, unsurprisingly).
