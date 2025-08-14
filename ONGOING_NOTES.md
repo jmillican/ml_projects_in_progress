@@ -38,3 +38,13 @@ Initial thoughts:
     - Model wins: 794, RNG wins: 55, Draws: 151
     - Model wins: 803, RNG wins: 55, Draws: 142
  - ...so it's not good per se, but it's better than random. (Random against itself with a different seed is pretty even, unsurprisingly).
+
+ * I'm concerned that I should really be masking my loss function, so that I stop training for any neurons that I'm ignoring in any given situation. Let's give that a go. In my training data, these should be the zeroed values, so I don't think I need to re-generate that data.
+ * OK yes, that seems to have been somewhat effective! Not *very*, but slightly better.
+   - Model wins: 855, RNG wins: 51, Draws: 94
+   - Model wins: 856, RNG wins: 40, Draws: 104
+ * Hang on - I should also play off the new version against the old version.
+ * And yes, the new one seems to be slightly better:
+   - Model 1 wins: 55, Model 2 wins: 36, Draws: 9
+   - Model 1 wins: 59, Model 2 wins: 36, Draws: 5
+ * It's probably time for me to actually do some reinforcement learning now; instead of just pre-training models to be better-than-random. So I should go learn how to actually do that!

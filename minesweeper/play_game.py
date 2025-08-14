@@ -93,7 +93,7 @@ def decide_next_move_with_rng(game: Minesweeper, rng: np.random.RandomState) -> 
 def does_model_beat_random(game_seed: int, model: TfKerasModel) -> tuple[bool, bool]:
     # Use fixed seeds for reproducibility
     game_start_seed = game_seed
-    r = np.random.RandomState(game_seed + 1)
+    r = np.random.RandomState(game_seed)
     
     game = Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=game_start_seed)
     i = 0
@@ -136,6 +136,44 @@ def does_model_beat_random(game_seed: int, model: TfKerasModel) -> tuple[bool, b
 
     return (model_won, rng_won)
 
+def does_model_beat_model(game_seed: int, model1: TfKerasModel, model2: TfKerasModel) -> tuple[bool, bool]:
+
+    # Play with model1
+    game = Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=game_seed)
+    i = 0
+    while game.game_state == GameState.PLAYING:
+        row, col, state = decide_next_move_with_model(game, model1)
+
+        if state == CellState.REVEALED:
+            game.reveal(row, col)
+        else:
+            game.flag(row, col)
+
+        i += 1
+    model1_result = (i, game.get_game_state())
+
+    # Play with model2
+    game = Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=game_seed)
+    i = 0
+    while game.game_state == GameState.PLAYING:
+        row, col, state = decide_next_move_with_model(game, model2)
+
+        if state == CellState.REVEALED:
+            game.reveal(row, col)
+        else:
+            game.flag(row, col)
+
+        i += 1
+    model2_result = (i, game.get_game_state())
+
+    model1_won = (model1_result[1] == GameState.WON and model2_result[1] == GameState.LOST) or \
+                (model1_result[1] == GameState.WON and model2_result[1] == GameState.WON and model1_result[0] < model2_result[0]) or \
+                (model1_result[1] == GameState.LOST and model2_result[1] == GameState.LOST and model1_result[0] > model2_result[0])
+    model2_won = (model2_result[1] == GameState.WON and model1_result[1] == GameState.LOST) or \
+               (model2_result[1] == GameState.WON and model1_result[1] == GameState.WON and model2_result[0] < model1_result[0]) or \
+               (model2_result[1] == GameState.LOST and model1_result[1] == GameState.LOST and model2_result[0] > model1_result[0])
+
+    return (model1_won, model2_won)
 
 def main():
     r = np.random.RandomState(2 ** 31 - 1)
@@ -154,25 +192,31 @@ def main():
         model_name = os.path.splitext(latest_model_file)[0]  # Remove the .h5 extension
         print(f"Loading model: {model_name}")
         # Load the model
-        model = load_model(model_name)
+        model1 = load_model(model_name)
+
+        # Load the previous model for comparison
+        previous_model_file = model_files[-2]
+        previous_model_name = os.path.splitext(previous_model_file)[0]
+        print(f"Loading previous model: {previous_model_name}")
+        model2 = load_model(previous_model_name)
     except Exception as e:
         print(f"Error loading model: {e}")
         return
 
-    model_wins = 0
-    rng_wins = 0
+    model1_wins = 0
+    model2_wins = 0
     draw = 0
-    for i in tqdm(range(1000)):
+    for i in tqdm(range(100)):
         game_seed = r.randint(2 ** 32 - i)
-        model_win, rng_win = does_model_beat_random(game_seed, model)
-        if model_win:
-            model_wins += 1
-        elif rng_win:
-            rng_wins += 1
+        model1_win, model2_win = does_model_beat_model(game_seed, model1, model2)
+        if model1_win:
+            model1_wins += 1
+        elif model2_win:
+            model2_wins += 1
         else:
             draw += 1
 
-    print(f"Model wins: {model_wins}, RNG wins: {rng_wins}, Draws: {draw}")
+    print(f"Model 1 wins: {model1_wins}, Model 2 wins: {model2_wins}, Draws: {draw}")
 
 
     # i = 0

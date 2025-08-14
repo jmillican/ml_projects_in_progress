@@ -5,6 +5,14 @@ from tensorflow.keras.layers import Dense  # type: ignore
 import numpy as np
 from tensorflow.keras import Model as TfKerasModel # type: ignore
 
+def loss_function(y_true, y_pred):
+    """
+    Custom loss function that masks the loss for cells that are not visible.
+    """
+    mask = tf.cast(tf.not_equal(y_true, 0), tf.float32)  # Mask where y_true is not zero
+    masked_loss = tf.reduce_mean(tf.square(y_true - y_pred) * mask)
+    return masked_loss
+
 def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) -> TfKerasModel:
     tf.random.set_seed(1234)
     tf.config.run_functions_eagerly(False)
@@ -28,7 +36,7 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
         staircase=True)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule)  # type: ignore
-    model.compile(optimizer=optimizer, loss='mean_squared_error')
+    model.compile(optimizer=optimizer, loss=loss_function)
     return model
 
 def getModelPath(model_name: str) -> str:
@@ -46,4 +54,4 @@ def load_model(model_name: str) -> TfKerasModel:
     model_path = getModelPath(model_name)
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model {model_name} does not exist at {model_path}.")
-    return tf.keras.models.load_model(model_path)   # type: ignore
+    return tf.keras.models.load_model(model_path, custom_objects={'loss_function': loss_function})   # type: ignore
