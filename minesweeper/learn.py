@@ -6,7 +6,7 @@ from tensorflow.keras.layers import Dense  # type: ignore
 from .model import create_model, save_model
 from datetime import datetime
 
-NUM_TO_LOAD = 10 ** 5
+NUM_TO_LOAD = 5 * (10 ** 5)
 
 training_data_dir = os.path.join(os.path.dirname(__file__), 'training_data')
 if not os.path.exists(training_data_dir):
@@ -27,7 +27,7 @@ def load_consolidated_data(max_samples=None) -> tuple[np.ndarray, np.ndarray]:
     
     data = np.load(full_path)
     all_boards = data['boards']
-    move_ratings = data['safe_moves']
+    move_ratings = data['safe_moves'] / 100.0 ## I started in the range -100 to 100, but now I want to normalize it to -1 to 1.
     
     if max_samples and max_samples < len(all_boards):
         all_boards = all_boards[:max_samples]

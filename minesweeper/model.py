@@ -20,7 +20,7 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
         ]
     )
     # Use modern Adam optimizer with learning rate schedule
-    initial_learning_rate = 0.00001
+    initial_learning_rate = 0.000001
     lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay( # type: ignore
         initial_learning_rate,
         decay_steps=10000,

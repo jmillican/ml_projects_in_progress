@@ -7,7 +7,7 @@ from .print_board import print_board
 models_dir = os.path.join(os.path.dirname(__file__), 'models')
 
 def main():
-    r = np.random.RandomState(2 ** 31 - 1)
+    r = np.random.RandomState(2 ** 31 - 7)
     game = Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=r.randint(2 ** 32 - 1))
 
     # Load the latest model chronologically from the models directory
