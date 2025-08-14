@@ -14,9 +14,10 @@ class GameState(Enum):
     WON = 1
     LOST = 2
 
+BOARD_SIZE = 9
 
 class Minesweeper:
-    def __init__(self, rows: int = 9, cols: int = 9, mines: int = 10, seed: Optional[int] = None):
+    def __init__(self, rows: int = BOARD_SIZE, cols: int = BOARD_SIZE, mines: int = 10, seed: Optional[int] = None):
         """
         Initialize a new Minesweeper game.
         
@@ -32,6 +33,7 @@ class Minesweeper:
         self.seed = seed
         self.game_state = GameState.PLAYING
         self.first_move = True
+        self.num_moves = 0
         
         # Initialize the random number generator with the seed
         self.rng = np.random.RandomState(seed)
@@ -115,7 +117,9 @@ class Minesweeper:
             raise ValueError(f"Invalid position: ({row}, {col})")
             
         if self.cell_states[row, col] != CellState.HIDDEN.value:
-            return True  # Already revealed or flagged
+            raise ValueError(f"Cell ({row}, {col}) is already revealed or flagged.")
+
+        self.num_moves += 1
             
         # Place mines on first move
         if self.first_move:
@@ -159,15 +163,24 @@ class Minesweeper:
             col: Column index
         """
         if self.game_state != GameState.PLAYING:
-            return
+            raise ValueError("Cannot flag cells when game is not in progress.")
             
         if not (0 <= row < self.rows and 0 <= col < self.cols):
             raise ValueError(f"Invalid position: ({row}, {col})")
-            
-        if self.cell_states[row, col] == CellState.HIDDEN.value:
-            self.cell_states[row, col] = CellState.FLAGGED.value
-        elif self.cell_states[row, col] == CellState.FLAGGED.value:
-            self.cell_states[row, col] = CellState.HIDDEN.value
+        
+        if self.cell_states[row, col] == CellState.REVEALED.value:
+            raise ValueError(f"Cannot flag revealed cell ({row}, {col}).")
+        
+
+        if self.cell_states[row, col] == CellState.FLAGGED.value:
+            raise ValueError(f"Cell ({row}, {col}) is already flagged.")
+        
+        # Flagging a safe square loses the game.
+        if not self.mine_board[row, col]:
+            self.game_state = GameState.LOST
+            return
+
+        self.cell_states[row, col] = CellState.FLAGGED.value
             
     def get_visible_board(self) -> np.ndarray:
         """

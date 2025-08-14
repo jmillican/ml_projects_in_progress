@@ -12,9 +12,11 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
         [
             tf.keras.Input(shape=input_shape, name='input_layer'),  # type: ignore
             Dense(2 ** 8, activation='relu', name='layer1'),
-            Dense(2 ** 7, activation='relu', name='layer2'),
-            Dense(2 ** 7, activation='relu', name='layer3'),
-            Dense(output_shape[0], activation='sigmoid', name='output_layer')
+            Dense(2 ** 8, activation='relu', name='layer2'),
+            Dense(2 ** 8, activation='relu', name='layer3'),
+            Dense(2 ** 8, activation='relu', name='layer4'),
+            Dense(2 ** 8, activation='relu', name='layer5'),
+            Dense(output_shape[0], activation='linear', name='output_layer')
         ]
     )
     # Use modern Adam optimizer with learning rate schedule
@@ -26,7 +28,7 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
         staircase=True)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule)  # type: ignore
-    model.compile(optimizer=optimizer, loss='binary_crossentropy')
+    model.compile(optimizer=optimizer, loss='mean_squared_error')
     return model
 
 def getModelPath(model_name: str) -> str:
