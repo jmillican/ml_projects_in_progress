@@ -1,0 +1,1 @@
+Project for playing around with various machine learning examples. The virtual enviornment setup should hopefully be usable across all projects; so that I can easily work with everything without creating too many repositories, and hopefully keep all of the context available to me.

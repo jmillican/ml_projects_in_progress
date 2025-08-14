@@ -1,0 +1,23 @@
+# Notes file
+
+It will be helpful to both me, and any AI coding assistants that I use, to keep track of some context. This should be a roughly running log of anything I'm trying, any revelations, etc.
+
+
+## 14-08-2025
+
+Initial thoughts:
+* I've been working through Andrew Ng's course. It's amazing, and I haven't yet got to Reinforcement learning, but I'm eager to try stuff anyway and "learn by doing".
+* I attempted to train a neural net on Spider Solitaire. It didn't go great, but I have a bunch of lessons learned from the process. I'd like to try it again, but should start with some simpler problem so far.
+* Claude Code was amazing for building a lot of my structure (e.g. a class to represent the Spider Solitaire game and state, and possible moves, print out to the scree, etc) which saved me a lot of time.
+* My initial approaches were unfortunately just training on single moves. E.g. get a neural network to predict the next move (using Sigmoid - which is likely actually the wrong call), then see if it increases my "score" method. That's unfortunately a bit stochastic as it doesn't in any way incentivise long-term planning. Likely not even possible to build a neural network that wins the game with this approach, unless you somehow have a perfect scoring function, where the score predicts how close you are to a win. Which... likely is incredbily difficult to build, and would defeat the purpose of the whole exercise.
+* This was also a bit silly, because I was generating my training data on predictions from the network - but on a randomly initialised network, there's no reason to do this, instead of just taking perfectly random moves! I should therefore actually get some pre-training data!
+* Once I started recursing to see which move turned out to enable the strongest position n moves down the line, I was probably closer to the right track. But this was much slower - and I was also throwing away a lot of valuable data! Rather than recursing 4 moves down, and then just seeing the best impact on the first move (i.e. training on how each move turned out in 4 moves), I should also take advantage of the fact that I'm now getting examples how scores turned out 3 moves down, 2 moves down, and 1 move down. While these are less useful than the deeper recursions, if my scoring function is semi-useful; they might still be helpful.
+* Generating the data, especially the recursion, was the slow part. If I can come up with a scoring method that I believe in, I should do at least the earlist pre-training part with stored data - so that I'm not having to spend all of that time and compute for every single run.
+* This might mean that the earliest stages of the problem aren't really reinforcement learning after all. They might be pre-training the model to play half-decent spider solitaire for a few moves; so that I can then start generating starting positions from these moves, and then learning from them.
+* Even that stage might not be pure reinforcement learning. It might be a combination of:
+  - Generate some decent-looking positions, then literally repeat the same process as before - recursing 4 layers deep, taking that as training data, and training a model on all of these too.
+  - Reinforce whichever of these positions led to the best positions after another 4 moves. I.e. hopefully incentivising move choices that eventually led to good positions after 8 moves.
+* Thinking about it, the recursion is expensive. If this strategy works, it might be better to only go 3 layers deep at each step. Difficult tradeoff, as we don't want to exclude moves that look bad after 3 moves, but end up looking great after 6 or 8. Each extra layer in the full recursive evaluation helps to ensure we find all of those.
+* Arguably we should just randomly pick two branches, because then recursing 6 or 7 layers deep is still relatively plausible (6 layers of 2 brnaches is cheaper than 4 layers of 3 branches). Maybe a combination of both. Although this could be where RL comes into its own, as it should give us better-than-random options for the first few layers, before we do a full recursion. Like my point above.
+* Spider Solitaire's dependency on long-term planning, and immediate uncertainty of whether any move has improved the position or not, makes it hard for this problem. I should start with a simpler problem, to demonstrate to myself that I'm getting some of these concepts correct in the first place!
+* Let's start with Minesweeper. Long-term planning will probably help make slightly better moves, but ultimately even looking just one move ahead can generally work for this game - and give you an immediate signal if you've made a critically bad move.
