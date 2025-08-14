@@ -11,13 +11,21 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
     model = Sequential(
         [
             tf.keras.Input(shape=input_shape, name='input_layer'),  # type: ignore
-            Dense(2 ** 7, activation='relu', name='layer1'),
-            Dense(2 ** 6, activation='relu', name='layer2'),
-            Dense(2 ** 6, activation='relu', name='layer3'),
+            Dense(2 ** 8, activation='relu', name='layer1'),
+            Dense(2 ** 7, activation='relu', name='layer2'),
+            Dense(2 ** 7, activation='relu', name='layer3'),
             Dense(output_shape[0], activation='sigmoid', name='output_layer')
         ]
     )
-    optimizer = tf.keras.optimizers.legacy.Adam(learning_rate=0.00001)  # type: ignore
+    # Use modern Adam optimizer with learning rate schedule
+    initial_learning_rate = 0.00001
+    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay( # type: ignore
+        initial_learning_rate,
+        decay_steps=10000,
+        decay_rate=0.96,
+        staircase=True)
+    
+    optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule)  # type: ignore
     model.compile(optimizer=optimizer, loss='binary_crossentropy')
     return model
 

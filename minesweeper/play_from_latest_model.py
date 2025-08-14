@@ -33,13 +33,22 @@ def main():
     game_seed = r.randint(0, 2**32 - 1)
     game = Minesweeper(rows=9, cols=9, mines=10, seed=game_seed)
 
+    move = 0
     while game.get_game_state() == GameState.PLAYING:
+        move += 1
         print("Current board:")
         print_board(game)
         # Infer the next best move using the model
         visible_board = game.get_visible_board()
         action = model.predict(visible_board.reshape(1, -1))  # Reshape to match model input
         reshaped_action = action.reshape(9, 9)
+
+        if move == 2:
+            reshaped_action = reshaped_action * 1000.0
+            reshaped_action = reshaped_action.astype(np.int32)
+            print("Predicted action values for each cell:")
+            print(reshaped_action)
+            return
 
         # Find the un-revealed cell with the highest predicted value
         move_scores = []
