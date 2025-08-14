@@ -3,7 +3,7 @@
 It will be helpful to both me, and any AI coding assistants that I use, to keep track of some context. This should be a roughly running log of anything I'm trying, any revelations, etc.
 
 
-## 14-08-2025
+## 14-08-2025 (Starting point)
 
 Initial thoughts:
 * I've been working through Andrew Ng's course. It's amazing, and I haven't yet got to Reinforcement learning, but I'm eager to try stuff anyway and "learn by doing".
@@ -21,3 +21,8 @@ Initial thoughts:
 * Arguably we should just randomly pick two branches, because then recursing 6 or 7 layers deep is still relatively plausible (6 layers of 2 brnaches is cheaper than 4 layers of 3 branches). Maybe a combination of both. Although this could be where RL comes into its own, as it should give us better-than-random options for the first few layers, before we do a full recursion. Like my point above.
 * Spider Solitaire's dependency on long-term planning, and immediate uncertainty of whether any move has improved the position or not, makes it hard for this problem. I should start with a simpler problem, to demonstrate to myself that I'm getting some of these concepts correct in the first place!
 * Let's start with Minesweeper. Long-term planning will probably help make slightly better moves, but ultimately even looking just one move ahead can generally work for this game - and give you an immediate signal if you've made a critically bad move.
+
+## 14-08-2025 (after starting)
+
+* Minesweeper is potentially nice and easy for this, because I don't even need to run the model at all to start with. I can just generate random moves that I *already know* aren't mines; and create a ton of training data based on that. I don't if it will learn to avoid mines from that (as it can definitely just pick random squares at that point), but it's worth trying!
+* Actually, let's try something even simpler: let's train on *all possible safe moves* for a given board. It's totally cheating at that point - but might allow us to train with much less data for a starting point.
