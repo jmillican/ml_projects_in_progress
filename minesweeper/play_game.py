@@ -201,7 +201,7 @@ def main():
         model1 = load_model(model_name)
 
         # Load the previous model for comparison
-        previous_model_file = model_files[-5]
+        previous_model_file = model_files[-2]
         previous_model_name = os.path.splitext(previous_model_file)[0]
         print(f"Loading previous model: {previous_model_name}")
         model2 = load_model(previous_model_name)

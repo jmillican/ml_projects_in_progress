@@ -71,3 +71,8 @@ Initial thoughts:
    - Loading model: minesweeper_model_25-08-15_02-24
    - Loading previous model: minesweeper_model_25-08-14_23-21
    - Model 1 wins: 321, Model 2 wins: 155, Draws: 24
+
+ * With a slightly new architecture (only convolutional layers, no dense layers, far fewer parameters), I seem to be getting slightly better results again. Within a margin of error I'd say, but at least being comparable with fewer parameters is probably a win!
+   - Loading model: minesweeper_model_25-08-15_02-44
+   - Loading previous model: minesweeper_model_25-08-15_02-24
+   - Model 1 wins: 242, Model 2 wins: 221, Draws: 37

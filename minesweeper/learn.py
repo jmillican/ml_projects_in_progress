@@ -74,7 +74,7 @@ def main():
     
     model.fit(
         all_boards.reshape(-1, all_boards[0].shape[0], all_boards[0].shape[1], 1),
-        move_ratings.reshape(-1, move_ratings_flattened_shape.size),
+        move_ratings,
         epochs=10,
         validation_split=0.2,  # Use 20% of data for validation
         callbacks=[early_stopping, reduce_lr],
