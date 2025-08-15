@@ -48,3 +48,14 @@ Initial thoughts:
    - Model 1 wins: 55, Model 2 wins: 36, Draws: 9
    - Model 1 wins: 59, Model 2 wins: 36, Draws: 5
  * It's probably time for me to actually do some reinforcement learning now; instead of just pre-training models to be better-than-random. So I should go learn how to actually do that!
+
+ * OK so I tried to do some RL, in rl.py. I think there's a good chance I didn't get enough data or just misunderstood what I was doing, but it seems to have made the model significantly worse!
+   - Model 1 wins: 13, Model 2 wins: 73, Draws: 14
+
+ * ..although the second iteration of RL seems to have done better (each time Model 1 is the latest, and Model 2 the second-most-recent).
+   - Model 1 wins: 76, Model 2 wins: 15, Draws: 9
+   - Model 1 wins: 356, Model 2 wins: 93, Draws: 51
+ * Let's try it against the second most recent.
+   - Model 1 wins: 192, Model 2 wins: 247, Draws: 61
+   ...yup the original pre-trained model was better.
+ * I think it's time to explore a different neural network architecture. I've just learned that I could be using Convolutional Neural Nets (which should have occurred to me before!), and this might help me to do a lot better, a lot faster, with less data. Let's give it a go!

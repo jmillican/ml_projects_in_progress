@@ -8,9 +8,33 @@ from tensorflow.keras import Model as TfKerasModel # type: ignore
 from tqdm import tqdm
 import absl.logging
 absl.logging.set_verbosity(absl.logging.ERROR)  # Suppress warnings
+from .profile import profile_start, profile_end
 
 
 models_dir = os.path.join(os.path.dirname(__file__), 'models')
+
+def produce_model_predictions(game: Minesweeper, model) -> np.ndarray:
+    profile_start("Predict")
+    profile_start("PredictGetVisible")
+    visible_board = game.get_visible_board()
+    profile_end("PredictGetVisible")
+
+    actions = model.predict(visible_board.flatten().reshape(1, -1), verbose=0)
+    reshaped = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
+    profile_end("Predict")
+    return reshaped
+
+def decide_next_move_from_prediction(game: Minesweeper, actions: np.ndarray) -> tuple[int, int, CellState]:
+    visible_board = game.get_visible_board()
+    valid_moves = []
+    for row in range(BOARD_SIZE):
+        for col in range(BOARD_SIZE):
+            if visible_board[row, col] == -1:  # Cell is hidden
+                valid_moves.append((actions[row, col, 0], (row, col, CellState.REVEALED)))
+                valid_moves.append((actions[row, col, 1], (row, col, CellState.FLAGGED)))
+
+    valid_moves.sort(reverse=True, key=lambda x: x[0])  # Sort by action value
+    return valid_moves[0][1]   # Return the top-ranked next move
 
 def decide_next_move_with_model(game: Minesweeper, model) -> tuple[int, int, CellState]:
     """
@@ -23,40 +47,8 @@ def decide_next_move_with_model(game: Minesweeper, model) -> tuple[int, int, Cel
     Returns:
         A tuple containing the row, column, and cell state (REVEALED or FLAGGED).
     """
-    visible_board = game.get_visible_board()
-    actions = model.predict(visible_board.flatten().reshape(1, -1), verbose=0)
-    actions = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
-
-    # if True:
-    #     # Print a grid of the actions, normalised into a 0-9 range of integer values.
-    #     print("\nReveal values (0-9):")
-    #     for row in range(BOARD_SIZE):
-    #         row_values = []
-    #         for col in range(BOARD_SIZE):
-    #             if visible_board[row, col] == -1:
-    #                 row_values.append(int(actions[row, col, 0] * 5 + 5))
-    #             else:
-    #                 row_values.append(" ")
-    #         print(" ".join(f"{val}" for val in row_values))
-    #     print("\nFlag values (0-9):")
-    #     for row in range(BOARD_SIZE):
-    #         row_values = []
-    #         for col in range(BOARD_SIZE):
-    #             if visible_board[row, col] == -1:
-    #                 row_values.append(int(actions[row, col, 1] * 5 + 5))
-    #             else:
-    #                 row_values.append(" ")
-    #         print(" ".join(f"{val}" for val in row_values))
-
-    valid_moves = []
-    for row in range(BOARD_SIZE):
-        for col in range(BOARD_SIZE):
-            if visible_board[row, col] == -1:  # Cell is hidden
-                valid_moves.append((actions[row, col, 0], (row, col, CellState.REVEALED)))
-                valid_moves.append((actions[row, col, 1], (row, col, CellState.FLAGGED)))
-
-    valid_moves.sort(reverse=True, key=lambda x: x[0])  # Sort by action value
-    return valid_moves[0][1]   # Return the top-ranked next move
+    actions = produce_model_predictions(game, model)
+    return decide_next_move_from_prediction(game, actions)
 
 def decide_next_move_with_rng(game: Minesweeper, rng: np.random.RandomState) -> tuple[int, int, CellState]:
     """
@@ -195,7 +187,7 @@ def main():
         model1 = load_model(model_name)
 
         # Load the previous model for comparison
-        previous_model_file = model_files[-2]
+        previous_model_file = model_files[-3]
         previous_model_name = os.path.splitext(previous_model_file)[0]
         print(f"Loading previous model: {previous_model_name}")
         model2 = load_model(previous_model_name)
@@ -206,7 +198,7 @@ def main():
     model1_wins = 0
     model2_wins = 0
     draw = 0
-    for i in tqdm(range(100)):
+    for i in tqdm(range(500)):
         game_seed = r.randint(2 ** 32 - i)
         model1_win, model2_win = does_model_beat_model(game_seed, model1, model2)
         if model1_win:

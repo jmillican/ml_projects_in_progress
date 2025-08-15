@@ -5,6 +5,8 @@ from tensorflow.keras.layers import Dense  # type: ignore
 import numpy as np
 from tensorflow.keras import Model as TfKerasModel # type: ignore
 
+models_dir = os.path.join(os.path.dirname(__file__), 'models')
+
 def loss_function(y_true, y_pred):
     """
     Custom loss function that masks the loss for cells that are not visible.
@@ -55,3 +57,19 @@ def load_model(model_name: str) -> TfKerasModel:
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model {model_name} does not exist at {model_path}.")
     return tf.keras.models.load_model(model_path, custom_objects={'loss_function': loss_function})   # type: ignore
+
+def load_latest_model(offset: int = 0, verbose: bool = True) -> TfKerasModel:
+    # List all model files in the models directory
+    model_files = [f for f in os.listdir(models_dir) if f.endswith('.h5')]
+    if not model_files:
+        raise FileNotFoundError("No model files found in 'models' directory.")
+    
+    # Sort files by modification time
+    model_files.sort(key=lambda f: os.path.getmtime(os.path.join(models_dir, f)))
+    latest_model_file = model_files[-(1 + offset)]  # Get the most recent model file, offset by the parameter
+    model_name = os.path.splitext(latest_model_file)[0]  # Remove the .h5 extension
+    if verbose:
+        print(f"Loading model: {model_name}")
+    # Load the model
+    model = load_model(model_name)
+    return model
