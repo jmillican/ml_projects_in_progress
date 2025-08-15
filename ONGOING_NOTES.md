@@ -66,3 +66,8 @@ Initial thoughts:
    - Loading previous model: minesweeper_model_25-08-14_23-21
    - Model 1 wins: 37, Model 2 wins: 51, Draws: 12
  * I'll try tweaking the neural net's architecture. 
+
+ * That was a little more promising!
+   - Loading model: minesweeper_model_25-08-15_02-24
+   - Loading previous model: minesweeper_model_25-08-14_23-21
+   - Model 1 wins: 321, Model 2 wins: 155, Draws: 24

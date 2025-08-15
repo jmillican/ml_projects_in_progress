@@ -21,16 +21,16 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
     model = Sequential(
         [
             tf.keras.Input(shape=input_shape, name='input_layer'),  # type: ignore
-            Conv2D(16, (3, 3), activation='relu', padding='same', name='conv1'),
-            Conv2D(16, (3, 3), activation='relu', padding='same', name='conv2'),
+            Conv2D(32, (3, 3), activation='relu', padding='same', name='conv1'),
+            Conv2D(32, (3, 3), activation='relu', padding='same', name='conv2'),
+            Conv2D(10, (3, 3), activation='relu', padding='same', name='conv3'),
             Flatten(name='flatten'),
             Dense(2 ** 8, activation='relu', name='dense1'),
-            Dense(2 ** 8, activation='relu', name='dense2'),
             Dense(output_shape[0], activation='linear', name='output_layer')
         ]
     )
     # Use modern Adam optimizer with learning rate schedule
-    initial_learning_rate = 0.000001
+    initial_learning_rate = 0.00001
     lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay( # type: ignore
         initial_learning_rate,
         decay_steps=10000,

@@ -6,7 +6,7 @@ from tensorflow.keras.layers import Dense  # type: ignore
 from .model import create_model, save_model
 from datetime import datetime
 
-NUM_TO_LOAD = (10 ** 5)
+NUM_TO_LOAD = 5 * (10 ** 5)
 
 training_data_dir = os.path.join(os.path.dirname(__file__), 'training_data')
 if not os.path.exists(training_data_dir):

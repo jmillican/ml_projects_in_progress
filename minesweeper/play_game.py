@@ -201,7 +201,7 @@ def main():
         model1 = load_model(model_name)
 
         # Load the previous model for comparison
-        previous_model_file = model_files[-4]
+        previous_model_file = model_files[-5]
         previous_model_name = os.path.splitext(previous_model_file)[0]
         print(f"Loading previous model: {previous_model_name}")
         model2 = load_model(previous_model_name)
@@ -212,7 +212,7 @@ def main():
     model1_wins = 0
     model2_wins = 0
     draw = 0
-    for i in tqdm(range(100)):
+    for i in tqdm(range(500)):
         game_seed = r.randint(2 ** 32 - i)
         model1_win, model2_win = does_model_beat_model(game_seed, model1, model2)
         if model1_win:
