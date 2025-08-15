@@ -1,7 +1,7 @@
 import os
 import tensorflow as tf
 from tensorflow.keras.models import Sequential  # type: ignore
-from tensorflow.keras.layers import Dense  # type: ignore
+from tensorflow.keras.layers import Dense, Conv2D, Flatten  # type: ignore
 import numpy as np
 from tensorflow.keras import Model as TfKerasModel # type: ignore
 
@@ -21,11 +21,11 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
     model = Sequential(
         [
             tf.keras.Input(shape=input_shape, name='input_layer'),  # type: ignore
-            Dense(2 ** 8, activation='relu', name='layer1'),
-            Dense(2 ** 8, activation='relu', name='layer2'),
-            Dense(2 ** 8, activation='relu', name='layer3'),
-            Dense(2 ** 8, activation='relu', name='layer4'),
-            Dense(2 ** 8, activation='relu', name='layer5'),
+            Conv2D(16, (3, 3), activation='relu', padding='same', name='conv1'),
+            Conv2D(16, (3, 3), activation='relu', padding='same', name='conv2'),
+            Flatten(name='flatten'),
+            Dense(2 ** 8, activation='relu', name='dense1'),
+            Dense(2 ** 8, activation='relu', name='dense2'),
             Dense(output_shape[0], activation='linear', name='output_layer')
         ]
     )

@@ -5,6 +5,7 @@ from .minesweeper import GameState, Minesweeper, CellState, BOARD_SIZE
 from .model import load_model
 from .print_board import print_board
 from tensorflow.keras import Model as TfKerasModel # type: ignore
+from tensorflow.keras.layers import Dense, Conv2D, Flatten  # type: ignore
 from tqdm import tqdm
 import absl.logging
 absl.logging.set_verbosity(absl.logging.ERROR)  # Suppress warnings
@@ -13,13 +14,26 @@ from .profile import profile_start, profile_end
 
 models_dir = os.path.join(os.path.dirname(__file__), 'models')
 
-def produce_model_predictions(game: Minesweeper, model) -> np.ndarray:
+def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndarray:
     profile_start("Predict")
     profile_start("PredictGetVisible")
     visible_board = game.get_visible_board()
     profile_end("PredictGetVisible")
 
-    actions = model.predict(visible_board.flatten().reshape(1, -1), verbose=0)
+    # Check if model expects Conv2D input by looking at the input layer after tf.keras.Input
+    if len(model.layers) > 1 and type(model.layers[1]) == Conv2D:
+        # Add batch dimension and channel dimension for Conv2D
+        reshaped_input = visible_board.reshape(1, BOARD_SIZE, BOARD_SIZE, 1)
+    else:
+        reshaped_input = visible_board.flatten().reshape(1, -1)
+
+    # # Check if model has the _input_shape attribute
+    # if not hasattr(model, '_input_shape'):
+    #     reshaped_input = visible_board.flatten().reshape(1, -1)
+    # else:
+    #     reshaped_input = visible_board.reshape(model._input_shape)
+
+    actions = model.predict(reshaped_input, verbose=0)
     reshaped = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
     profile_end("Predict")
     return reshaped
@@ -187,7 +201,7 @@ def main():
         model1 = load_model(model_name)
 
         # Load the previous model for comparison
-        previous_model_file = model_files[-3]
+        previous_model_file = model_files[-4]
         previous_model_name = os.path.splitext(previous_model_file)[0]
         print(f"Loading previous model: {previous_model_name}")
         model2 = load_model(previous_model_name)
@@ -198,7 +212,7 @@ def main():
     model1_wins = 0
     model2_wins = 0
     draw = 0
-    for i in tqdm(range(500)):
+    for i in tqdm(range(100)):
         game_seed = r.randint(2 ** 32 - i)
         model1_win, model2_win = does_model_beat_model(game_seed, model1, model2)
         if model1_win:

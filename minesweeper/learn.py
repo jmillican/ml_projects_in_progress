@@ -6,7 +6,7 @@ from tensorflow.keras.layers import Dense  # type: ignore
 from .model import create_model, save_model
 from datetime import datetime
 
-NUM_TO_LOAD = 5 * (10 ** 5)
+NUM_TO_LOAD = (10 ** 5)
 
 training_data_dir = os.path.join(os.path.dirname(__file__), 'training_data')
 if not os.path.exists(training_data_dir):
@@ -47,7 +47,7 @@ def main():
     move_ratings_flattened_shape = move_ratings_zeros_shape.flatten()
 
     model = create_model(
-        input_shape=all_boards[0].flatten().shape,
+        input_shape=(all_boards[0].shape[0], all_boards[0].shape[1], 1),
         output_shape=move_ratings_flattened_shape.shape)
 
     # Show model architecture and parameter count
@@ -73,7 +73,7 @@ def main():
     )
     
     model.fit(
-        all_boards.reshape(-1, all_boards[0].flatten().shape[0]),
+        all_boards.reshape(-1, all_boards[0].shape[0], all_boards[0].shape[1], 1),
         move_ratings.reshape(-1, move_ratings_flattened_shape.size),
         epochs=10,
         validation_split=0.2,  # Use 20% of data for validation

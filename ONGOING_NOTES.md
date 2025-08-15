@@ -59,3 +59,10 @@ Initial thoughts:
    - Model 1 wins: 192, Model 2 wins: 247, Draws: 61
    ...yup the original pre-trained model was better.
  * I think it's time to explore a different neural network architecture. I've just learned that I could be using Convolutional Neural Nets (which should have occurred to me before!), and this might help me to do a lot better, a lot faster, with less data. Let's give it a go!
+
+
+ * OK so first attempt at that didn't go amazingly.
+   - Loading model: minesweeper_model_25-08-15_01-56
+   - Loading previous model: minesweeper_model_25-08-14_23-21
+   - Model 1 wins: 37, Model 2 wins: 51, Draws: 12
+ * I'll try tweaking the neural net's architecture. 
