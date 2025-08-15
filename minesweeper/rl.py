@@ -23,11 +23,23 @@ def save_rl_training_data(boards, reward_vectors, filename_prefix='rl_training_d
     if os.path.exists(training_data_file):
         raise Exception("Training data file was created mid-run.")
 
-    boards_to_save = np.array([bm[0] for bm in boards], dtype=np.float32)
-    reward_vectors = np.array([bm[1] for bm in reward_vectors], dtype=np.float32)
+    boards_to_save = np.array(boards, dtype=np.float32)
+    reward_vectors = np.array(reward_vectors, dtype=np.float32)
 
     np.savez_compressed(training_data_file, boards=boards_to_save, reward_vectors=reward_vectors)
     print(f"Training data saved to {training_data_file}.")
+
+def load_rl_training_data(filename_prefix='rl_training_data', iteration=0) -> tuple[np.ndarray, np.ndarray]:
+    filename = f"{filename_prefix}_{iteration}.npz"
+    training_data_file = os.path.join(training_data_dir, filename)
+
+    if not os.path.exists(training_data_file):
+        raise Exception("Training data file does not exist.")
+
+    data = np.load(training_data_file)
+    boards = data['boards']
+    reward_vectors = data['reward_vectors']
+    return boards, reward_vectors
 
 def main():
     model = load_latest_model(verbose=True)
@@ -36,9 +48,9 @@ def main():
     boards = []
     reward_vectors = []
 
-    for rl_run in range(10):
+    for rl_run in range(1):
         print(f"Running RL iteration {rl_run + 1}...")
-        for i in tqdm(range(10000)):
+        for i in tqdm(range(500)):
             profile_start("RL Game")
             game = Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=rng.randint(2**32 - 1))
 
@@ -55,10 +67,9 @@ def main():
                     game.flag(row, col)
                 
                 if game.get_game_state() == GameState.LOST:
-                    reward = -1.0
+                    reward = -10.0
                 elif game.get_game_state() == GameState.WON:
-                    print("Omg it won!")
-                    reward = 1.0
+                    reward = 10.0
                 else:
                     if state == CellState.REVEALED:
                         # Reward for revealing a cell
@@ -98,6 +109,7 @@ def main():
         print(f"Collected {len(boards)} training examples.")
 
         save_rl_training_data(boards, reward_vectors, filename_prefix='rl_training_data', iteration=rl_run)
+        # boards, reward_vectors = load_rl_training_data(filename_prefix='rl_training_data', iteration=rl_run)
 
         # Add early stopping to prevent overfitting
         early_stopping = tf.keras.callbacks.EarlyStopping(  # type: ignore
@@ -117,13 +129,13 @@ def main():
         )
 
         model.fit(
-            np.array(boards).reshape(-1, boards[0].flatten().shape[0]),
-            np.array(reward_vectors).reshape(-1, reward_vectors[0].flatten().shape[0]),
+            np.array(boards).reshape(-1, 9, 9, 1),
+            np.array(reward_vectors).reshape(-1, 9, 9, 2),
             epochs=5,
             callbacks=[early_stopping, reduce_lr],
             verbose=1)
         
-        save_model(model, f"rl_model_iteration_{rl_run + 1}")
+        save_model(model, f"rl_conv_model_iteration_{rl_run + 1}")
 
 if __name__ == "__main__":
     main()

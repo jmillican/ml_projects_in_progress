@@ -76,3 +76,8 @@ Initial thoughts:
    - Loading model: minesweeper_model_25-08-15_02-44
    - Loading previous model: minesweeper_model_25-08-15_02-24
    - Model 1 wins: 242, Model 2 wins: 221, Draws: 37
+
+ * Reinforcement learning a little seems to improve things!
+   - Loading model: rl_conv_model_iteration_1
+   - Loading previous model: minesweeper_model_25-08-15_02-44
+   - Model 1 wins: 143, Model 2 wins: 113, Draws: 244
