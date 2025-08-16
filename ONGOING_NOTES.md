@@ -95,3 +95,6 @@ Initial thoughts:
   - Loading model: rl_conv_model_iteration_10
   - Loading previous model: rl_conv_model_iteration_9
   - Model 1 wins: 121, Model 2 wins: 176, Draws: 4703
+
+* A surprising learning: running Tensorflow for playing the games is actually faster on CPU than GPU, at least for single inferences! I suspect that everything has been taking much longer than it should have as a result of this. I should also see if this holds up when using more complex games; because to be fair 9x9 Minesweeper is pretty small.
+* I might still want to use the GPU for RL; but probably I need to refactor that to use batch inference anyway.

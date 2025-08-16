@@ -3,13 +3,14 @@ import numpy as np
 from .minesweeper import GameState, Minesweeper, CellState, BOARD_SIZE
 from .model import load_latest_model
 from .print_board import print_board
+import tensorflow as tf
 from tensorflow.keras import Model as TfKerasModel # type: ignore
 from tqdm import tqdm
-import absl.logging
-from .profile import profile_start, profile_end
+from .profile import profile_start, profile_end, print_profiles
+from .basic_config import suppress_tensorflow_logging, force_tensorflow_cpu
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress TensorFlow logging
-absl.logging.set_verbosity(absl.logging.ERROR)  # Suppress warnings
+suppress_tensorflow_logging()
+force_tensorflow_cpu()
 
 
 models_dir = os.path.join(os.path.dirname(__file__), 'models')
@@ -21,7 +22,8 @@ def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndar
     profile_end("PredictGetVisible")
 
     reshaped_input = visible_board.reshape(1, BOARD_SIZE, BOARD_SIZE, 1)
-    actions = model.predict(reshaped_input, verbose=0)
+    # Use model() instead of model.predict() for single predictions - much faster!
+    actions = model(reshaped_input, training=False).numpy()
     reshaped = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
     profile_end("Predict")
     return reshaped
@@ -117,7 +119,6 @@ def main():
     # Load the second-latest model chronologically from the models directory
     model2 = load_latest_model(offset=1)
 
-
     model1_prevails = 0
     model2_prevails = 0
     results = {
@@ -125,10 +126,12 @@ def main():
         'model2': {'wins': 0, 'losses': 0},
     }
     draw = 0
-    for i in tqdm(range(100)):
+    for i in tqdm(range(5000)):
         game_seed = r.randint(2 ** 32 - i)
+
         model1_result = play_game_with_model(game_seed, model1)
         model2_result = play_game_with_model(game_seed, model2)
+
         model1_prevailed = (model1_result[1] == GameState.WON and model2_result[1] == GameState.LOST) or \
                     (model1_result[1] == GameState.WON and model2_result[1] == GameState.WON and model1_result[0] < model2_result[0]) or \
                     (model1_result[1] == GameState.LOST and model2_result[1] == GameState.LOST and model1_result[0] > model2_result[0])
