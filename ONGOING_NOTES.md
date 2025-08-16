@@ -232,26 +232,37 @@ Initial thoughts:
   - rl_model_25-08-16_21-47_iteration_900: {'wins': 1077, 'losses': 3923, 'avg_moves_to_win': '26.67', 'avg_moves_to_lose': '14.39'}
 
   * This seems to have plateaued a bit. I'll commit this, and then try a larger network with leaky_relu.
-    - rl_model_25-08-16_21-53_iteration_0: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '14.00', 'avg_moves_to_lose': '2.72'}
-    - rl_model_25-08-16_21-56_iteration_30: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '10.50', 'avg_moves_to_lose': '4.79'}
-    - rl_model_25-08-16_22-00_iteration_60: {'wins': 19, 'losses': 4981, 'avg_moves_to_win': '19.32', 'avg_moves_to_lose': '8.58'}
-    - rl_model_25-08-16_22-04_iteration_90: {'wins': 72, 'losses': 4928, 'avg_moves_to_win': '21.06', 'avg_moves_to_lose': '9.47'}
-    - rl_model_25-08-16_22-08_iteration_120: {'wins': 172, 'losses': 4828, 'avg_moves_to_win': '23.48', 'avg_moves_to_lose': '10.04'}
-    - rl_model_25-08-16_22-12_iteration_150: {'wins': 308, 'losses': 4692, 'avg_moves_to_win': '24.36', 'avg_moves_to_lose': '10.78'}
-    - rl_model_25-08-16_22-16_iteration_180: {'wins': 411, 'losses': 4589, 'avg_moves_to_win': '25.31', 'avg_moves_to_lose': '11.49'}
-    - rl_model_25-08-16_22-21_iteration_210: {'wins': 480, 'losses': 4520, 'avg_moves_to_win': '25.06', 'avg_moves_to_lose': '11.66'}
-    - rl_model_25-08-16_22-26_iteration_240: {'wins': 498, 'losses': 4502, 'avg_moves_to_win': '25.35', 'avg_moves_to_lose': '12.16'}
-    - rl_model_25-08-16_22-30_iteration_270: {'wins': 463, 'losses': 4537, 'avg_moves_to_win': '24.94', 'avg_moves_to_lose': '12.04'}
-    - rl_model_25-08-16_22-35_iteration_300: {'wins': 475, 'losses': 4525, 'avg_moves_to_win': '25.21', 'avg_moves_to_lose': '12.21'}
-    - rl_model_25-08-16_22-40_iteration_330: {'wins': 479, 'losses': 4521, 'avg_moves_to_win': '25.54', 'avg_moves_to_lose': '12.32'}
-    - rl_model_25-08-16_22-45_iteration_360: {'wins': 487, 'losses': 4513, 'avg_moves_to_win': '25.28', 'avg_moves_to_lose': '12.64'}
-    - rl_model_25-08-16_22-50_iteration_390: {'wins': 548, 'losses': 4452, 'avg_moves_to_win': '25.52', 'avg_moves_to_lose': '12.75'}
-    - rl_model_25-08-16_22-54_iteration_420: {'wins': 528, 'losses': 4472, 'avg_moves_to_win': '25.67', 'avg_moves_to_lose': '12.77'}
-    - rl_model_25-08-16_22-59_iteration_450: {'wins': 545, 'losses': 4455, 'avg_moves_to_win': '25.42', 'avg_moves_to_lose': '12.91'}
-    - rl_model_25-08-16_23-04_iteration_480: {'wins': 534, 'losses': 4466, 'avg_moves_to_win': '25.76', 'avg_moves_to_lose': '13.16'}
-    - rl_model_25-08-16_23-09_iteration_510: {'wins': 536, 'losses': 4464, 'avg_moves_to_win': '25.46', 'avg_moves_to_lose': '13.13'}
-    - rl_model_25-08-16_23-14_iteration_540: {'wins': 571, 'losses': 4429, 'avg_moves_to_win': '25.82', 'avg_moves_to_lose': '13.33'}
-    - rl_model_25-08-16_23-19_iteration_570: {'wins': 561, 'losses': 4439, 'avg_moves_to_win': '25.75', 'avg_moves_to_lose': '13.23'}
-    - rl_model_25-08-16_23-24_iteration_600: {'wins': 587, 'losses': 4413, 'avg_moves_to_win': '25.67', 'avg_moves_to_lose': '13.37'}
+  - rl_model_25-08-16_21-53_iteration_0: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '14.00', 'avg_moves_to_lose': '2.72'}
+  - rl_model_25-08-16_21-56_iteration_30: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '10.50', 'avg_moves_to_lose': '4.79'}
+  - rl_model_25-08-16_22-00_iteration_60: {'wins': 19, 'losses': 4981, 'avg_moves_to_win': '19.32', 'avg_moves_to_lose': '8.58'}
+  - rl_model_25-08-16_22-04_iteration_90: {'wins': 72, 'losses': 4928, 'avg_moves_to_win': '21.06', 'avg_moves_to_lose': '9.47'}
+  - rl_model_25-08-16_22-08_iteration_120: {'wins': 172, 'losses': 4828, 'avg_moves_to_win': '23.48', 'avg_moves_to_lose': '10.04'}
+  - rl_model_25-08-16_22-12_iteration_150: {'wins': 308, 'losses': 4692, 'avg_moves_to_win': '24.36', 'avg_moves_to_lose': '10.78'}
+  - rl_model_25-08-16_22-16_iteration_180: {'wins': 411, 'losses': 4589, 'avg_moves_to_win': '25.31', 'avg_moves_to_lose': '11.49'}
+  - rl_model_25-08-16_22-21_iteration_210: {'wins': 480, 'losses': 4520, 'avg_moves_to_win': '25.06', 'avg_moves_to_lose': '11.66'}
+  - rl_model_25-08-16_22-26_iteration_240: {'wins': 498, 'losses': 4502, 'avg_moves_to_win': '25.35', 'avg_moves_to_lose': '12.16'}
+  - rl_model_25-08-16_22-30_iteration_270: {'wins': 463, 'losses': 4537, 'avg_moves_to_win': '24.94', 'avg_moves_to_lose': '12.04'}
+  - rl_model_25-08-16_22-35_iteration_300: {'wins': 475, 'losses': 4525, 'avg_moves_to_win': '25.21', 'avg_moves_to_lose': '12.21'}
+  - rl_model_25-08-16_22-40_iteration_330: {'wins': 479, 'losses': 4521, 'avg_moves_to_win': '25.54', 'avg_moves_to_lose': '12.32'}
+  - rl_model_25-08-16_22-45_iteration_360: {'wins': 487, 'losses': 4513, 'avg_moves_to_win': '25.28', 'avg_moves_to_lose': '12.64'}
+  - rl_model_25-08-16_22-50_iteration_390: {'wins': 548, 'losses': 4452, 'avg_moves_to_win': '25.52', 'avg_moves_to_lose': '12.75'}
+  - rl_model_25-08-16_22-54_iteration_420: {'wins': 528, 'losses': 4472, 'avg_moves_to_win': '25.67', 'avg_moves_to_lose': '12.77'}
+  - rl_model_25-08-16_22-59_iteration_450: {'wins': 545, 'losses': 4455, 'avg_moves_to_win': '25.42', 'avg_moves_to_lose': '12.91'}
+  - rl_model_25-08-16_23-04_iteration_480: {'wins': 534, 'losses': 4466, 'avg_moves_to_win': '25.76', 'avg_moves_to_lose': '13.16'}
+  - rl_model_25-08-16_23-09_iteration_510: {'wins': 536, 'losses': 4464, 'avg_moves_to_win': '25.46', 'avg_moves_to_lose': '13.13'}
+  - rl_model_25-08-16_23-14_iteration_540: {'wins': 571, 'losses': 4429, 'avg_moves_to_win': '25.82', 'avg_moves_to_lose': '13.33'}
+  - rl_model_25-08-16_23-19_iteration_570: {'wins': 561, 'losses': 4439, 'avg_moves_to_win': '25.75', 'avg_moves_to_lose': '13.23'}
+  - rl_model_25-08-16_23-24_iteration_600: {'wins': 587, 'losses': 4413, 'avg_moves_to_win': '25.67', 'avg_moves_to_lose': '13.37'}
   
-  * This seems to be plateauing, despite still continuing to gain a bit. Let's try something else. I'll commit this and then tweak the model architecture a bit.
+* This seems to be plateauing, despite still continuing to gain a bit. Let's try something else. I'll commit this and then tweak the model architecture a bit.
+
+* OK I'm making my early convolutional layers look slightly further away, and then I'm adding some dense layers at the end. This feels a bit trial-end-errory and I couldn't say if I think it's likely to work; but I could see an argument that some dense layers could enable some full-board planning and understanding that can't be achieved with pure convolutional layers.
+* On the other hand, this current architecture design has 159973 parameters - which is a massive explosion from the previous; and it's basically all in the dense layers. I struggle to see this helping to speed up learning, as we might just need so much more training data to make progress. In fact maybe ReLu would have been a better choice here, because vanishing gradients could potentially help it to learn a bit faster.
+
+  - rl_model_25-08-16_23-33_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '1.87'}
+  - rl_model_25-08-16_23-37_iteration_30: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '8.50', 'avg_moves_to_lose': '5.30'}
+  - rl_model_25-08-16_23-41_iteration_60: {'wins': 4, 'losses': 4996, 'avg_moves_to_win': '6.50', 'avg_moves_to_lose': '5.57'}
+  - rl_model_25-08-16_23-45_iteration_90: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '13.00', 'avg_moves_to_lose': '5.88'}
+  - rl_model_25-08-16_23-49_iteration_120: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '12.50', 'avg_moves_to_lose': '6.42'}
+
+* Yeah this isn't working. Also I realised that, despite the massive increase in parameters, I actually have fewer neurons in the two penultimate layers than in the output layer. Which seems counterintuitive, and like they'd have to learn some strange tricks for it to actually work.
