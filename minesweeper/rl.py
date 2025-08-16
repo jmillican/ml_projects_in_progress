@@ -43,14 +43,14 @@ def load_rl_training_data(filename_prefix='rl_training_data', iteration=0) -> tu
 
 def main():
     model = load_latest_model(verbose=True)
-    rng = np.random.RandomState(1234)  # Fixed seed for reproducibility
+    rng = np.random.RandomState(12345)  # Fixed seed for reproducibility
 
     boards = []
     reward_vectors = []
 
-    for rl_run in range(1):
+    for rl_run in range(10):
         print(f"Running RL iteration {rl_run + 1}...")
-        for i in tqdm(range(500)):
+        for i in tqdm(range(5000)):
             profile_start("RL Game")
             game = Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=rng.randint(2**32 - 1))
 

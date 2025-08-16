@@ -81,3 +81,17 @@ Initial thoughts:
    - Loading model: rl_conv_model_iteration_1
    - Loading previous model: minesweeper_model_25-08-15_02-44
    - Model 1 wins: 143, Model 2 wins: 113, Draws: 244
+
+ * Iterating further seems to improve things yet again!
+   - Loading model: rl_conv_model_iteration_10
+   - Loading previous model: minesweeper_model_25-08-15_02-44
+   - Model 1 wins: 727, Model 2 wins: 426, Draws: 847
+
+## 16-08-2025
+* I've realised over the past couple of days that the my approach to Spider Solitaire was probably highly flawed in a similar manner to my original approach to Minesweeper. Specifically, Minesweeper performance improved with fewer parameters when I used a convolutional network, because this enabled learnings to be generalised across a board which behaves essentially the same across its entire space. Given that Spider Solitaire mainly consists of 10 piles, each of which behaves identically, it makes sense to use an architecture that shares learnings across all of them in the initial layers. That will hopefully enable fewer parameters and less training data - because, for example, two identical boards except for two swapped piles will hopefully then be able to be treated quite similarly, using mostly the same weights.
+* I also suspect that I should reverse order the piles. While there's certainly some relevance to the height of the pile and the cards lower down in it, the most important thing is what's at the top - because these are the bits that can be moved, or serve as move destinations. So if we can structure it so that computations relating to the top of the pile can more easily be generalised with the same weights, this feels likely to help.
+
+* Oh also, the final comparison I did on that last batch of training showed a very slight decline in performance in the latest version:
+  - Loading model: rl_conv_model_iteration_10
+  - Loading previous model: rl_conv_model_iteration_9
+  - Model 1 wins: 121, Model 2 wins: 176, Draws: 4703

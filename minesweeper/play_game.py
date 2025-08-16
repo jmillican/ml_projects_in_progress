@@ -212,7 +212,7 @@ def main():
     model1_wins = 0
     model2_wins = 0
     draw = 0
-    for i in tqdm(range(500)):
+    for i in tqdm(range(5000)):
         game_seed = r.randint(2 ** 32 - i)
         model1_win, model2_win = does_model_beat_model(game_seed, model1, model2)
         if model1_win:

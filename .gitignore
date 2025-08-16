@@ -211,6 +211,7 @@ training_data
 training_data/*
 training_data/*/
 minesweeper/consolidated_training_data.npz
+minesweeper/rl_training_data/*
 
 # macOS
 .DS_Store
