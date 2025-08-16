@@ -146,24 +146,23 @@ def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tu
     return [(game.num_moves, game.get_game_state()) for game in games]
 
 def main():
-    r = np.random.RandomState(2 ** 31 - 1)
+    offsets_to_load = 1
 
-    offsets_to_load = 2
-
-    for offset in range(offsets_to_load):
+    for offset in range(0, 1):
+        r = np.random.RandomState(2 ** 31 - 1)
         # Load the latest model chronologically from the models directory
         model, model_name = load_latest_model(offset=offset)
 
-        # Show model architecture and parameter count
-        print("\nModel Summary:")
-        model.summary()
+        # # Show model architecture and parameter count
+        # print("\nModel Summary:")
+        # model.summary()
 
         results = {
             'model1': {'wins': 0, 'losses': 0, 'total_moves_in_winning_games': 0, 'total_moves_in_losing_games': 0},
         }
 
         game_seeds = [r.randint(2**32 - 1) for _ in range(5000)]
-        print(f"Playing 5000 games with the model...")
+        print(f"\n\nPlaying 5000 games with the model...")
         print("Playing model 1...")
         model_results = play_games_with_model(game_seeds, model)
 
