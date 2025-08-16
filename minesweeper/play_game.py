@@ -152,8 +152,8 @@ def main():
     # model2_prevails = 0
     # draw = 0
     results = {
-        'model1': {'wins': 0, 'losses': 0},
-        'model2': {'wins': 0, 'losses': 0},
+        'model1': {'wins': 0, 'losses': 0, 'total_moves_in_winning_games': 0, 'total_moves_in_losing_games': 0},
+        'model2': {'wins': 0, 'losses': 0, 'total_moves_in_winning_games': 0, 'total_moves_in_losing_games': 0},
     }
 
     game_seeds = [r.randint(2**32 - 1) for _ in range(5000)]
@@ -176,8 +176,10 @@ def main():
         
         if model1_result[1] == GameState.WON:
             results['model1']['wins'] += 1
+            results['model1']['total_moves_in_winning_games'] += model1_result[0]
         else:
             results['model1']['losses'] += 1
+            results['model1']['total_moves_in_losing_games'] += model1_result[0]
         # if model2_result[1] == GameState.WON:
         #     results['model2']['wins'] += 1
         # else:
@@ -192,7 +194,16 @@ def main():
 
     # print(f"Model 1 is better: {model1_prevails}, Model 2 better: {model2_prevails}, Draws: {draw}")
     # print(results)
-    print(f"{model1_name}: {results['model1']}")
+
+    avg_moves_to_win = results['model1']['total_moves_in_winning_games'] / results['model1']['wins'] if results['model1']['wins'] > 0 else 0.0
+    avg_moves_to_lose = results['model1']['total_moves_in_losing_games'] / results['model1']['losses'] if results['model1']['losses'] > 0 else 0.0
+    model1_results = {
+        'wins': results['model1']['wins'],
+        'losses': results['model1']['losses'],
+        'avg_moves_to_win': f"{avg_moves_to_win:.2f}",
+        'avg_moves_to_lose': f"{avg_moves_to_lose:.2f}",
+    }
+    print(f"{model1_name}: {model1_results}")
 
 if __name__ == "__main__":
     main()

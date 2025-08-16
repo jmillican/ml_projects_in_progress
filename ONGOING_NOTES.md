@@ -129,3 +129,14 @@ Initial thoughts:
   - rl_model_25-08-16_15-28_iteration_120: {'wins': 313, 'losses': 4687}
 
 * OK so actually that positive signal of getting more examples more run is probably a double-edged sword; as it also means that each iteration takes a little longer, and Tensorflow gets more data in each run. That doesn't feel like a great approach to RL, so with this one at 120 iterations, I might just start again but with that sample cap.
+
+* So with this new run, the results are looking as follows:
+  - rl_model_25-08-16_15-34_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-16_15-35_iteration_30: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '16.00', 'avg_moves_to_lose': '4.56'}
+  - rl_model_25-08-16_15-37_iteration_60: {'wins': 12, 'losses': 4988, 'avg_moves_to_win': '21.08', 'avg_moves_to_lose': '6.90'}
+  - rl_model_25-08-16_15-39_iteration_90: {'wins': 29, 'losses': 4971, 'avg_moves_to_win': '24.76', 'avg_moves_to_lose': '7.55'}
+  - rl_model_25-08-16_15-42_iteration_120: {'wins': 57, 'losses': 4943, 'avg_moves_to_win': '26.65', 'avg_moves_to_lose': '7.94'}
+  - rl_model_25-08-16_15-45_iteration_150: {'wins': 76, 'losses': 4924, 'avg_moves_to_win': '26.58', 'avg_moves_to_lose': '8.27'}
+  - rl_model_25-08-16_15-49_iteration_180: {'wins': 124, 'losses': 4876, 'avg_moves_to_win': '28.02', 'avg_moves_to_lose': '8.77'}
+
+* OK so I'm a bit of a fool. I wasn't resetting the training data between runs. It was increasing because it was an ever-expanding list, not because the game was lasting longer. It's good that the model was improving; but probably this was limiting its ability to improve (albeit weirdly maybe making the training more stable). Let's fix that and then give it another go.

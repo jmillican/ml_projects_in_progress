@@ -11,7 +11,7 @@ from .profile import profile_start, profile_end, get_profile, print_profiles
 from datetime import datetime
 
 discount_factor = 0.9  # Discount factor for future rewards
-RANDOM_PROBABILITY = 0.05  # Probability of making a random move instead of the model's prediction
+RANDOM_PROBABILITY = 0.08  # Probability of making a random move instead of the model's prediction
 
 training_data_dir = os.path.join(os.path.dirname(__file__), 'rl_training_data')
 if not os.path.exists(training_data_dir):
@@ -46,6 +46,7 @@ def load_rl_training_data(filename_prefix='rl_training_data', iteration=0) -> tu
 
 NUM_IN_RUN = 1000
 BATCH_SIZE = 100
+TARGET_SAMPLES_PER_ITERATION = 20000
 
 def main():
     # model = load_latest_model(verbose=True)
@@ -73,7 +74,7 @@ def main():
             save_model(model, model_name)
 
         print(f"Running RL iteration {rl_run + 1}...")
-        for _ in tqdm(range(iterations)):
+        for batch_num in tqdm(range(iterations)):
             profile_start("RL Game")
 
             games = [
@@ -154,6 +155,9 @@ def main():
                     reward_vectors.append(reward_vector)
                 games = [game for game in games if game.get_game_state() == GameState.PLAYING]
             profile_end("RL Game")
+            if len(boards) >= TARGET_SAMPLES_PER_ITERATION:
+                print(f"Reached target samples per iteration, after {batch_num + 1} batches of {BATCH_SIZE} games each.")
+                break
 
         print(f"Collected {len(boards)} training examples.")
 
