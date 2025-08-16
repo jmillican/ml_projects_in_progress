@@ -34,7 +34,8 @@ class Minesweeper:
         self.game_state = GameState.PLAYING
         self.first_move = True
         self.num_moves = 0
-        
+        self.valid_moves_mask = np.full((rows, cols, 2), 1, dtype=np.float16)
+
         # Initialize the random number generator with the seed
         self.rng = np.random.RandomState(seed)
         
@@ -117,7 +118,7 @@ class Minesweeper:
             raise ValueError(f"Invalid position: ({row}, {col})")
             
         if self.cell_states[row, col] != CellState.HIDDEN.value:
-            raise ValueError(f"Cell ({row}, {col}) is already revealed or flagged.")
+            raise ValueError(f"Cell ({row}, {col}) is already revealed or flagged, with value {self.cell_states[row, col]}.")
 
         self.num_moves += 1
             
@@ -147,12 +148,14 @@ class Minesweeper:
             return
             
         self.cell_states[row, col] = CellState.REVEALED.value
+        self.valid_moves_mask[row, col] = [0, 0]
         self.revealed_count += 1
         
         # If cell has no adjacent mines, reveal all neighbors
         if self.adjacent_mines[row, col] == 0:
             for r, c in self._get_neighbors(row, col):
                 self._reveal_cell(r, c)
+                self.valid_moves_mask[r, c] = [0, 0]
                 
     def flag(self, row: int, col: int):
         """
@@ -174,6 +177,11 @@ class Minesweeper:
 
         if self.cell_states[row, col] == CellState.FLAGGED.value:
             raise ValueError(f"Cell ({row}, {col}) is already flagged.")
+
+        # Place mines on first move
+        if self.first_move:
+            self._place_mines(row, col)
+            self.first_move = False
         
         # Flagging a safe square loses the game.
         if not self.mine_board[row, col]:
@@ -181,6 +189,7 @@ class Minesweeper:
             return
 
         self.cell_states[row, col] = CellState.FLAGGED.value
+        self.valid_moves_mask[row, col] = [0, 0]
         self.num_moves += 1
             
     def get_visible_board(self) -> np.ndarray:
@@ -207,6 +216,33 @@ class Minesweeper:
                         visible[row, col] = self.adjacent_mines[row, col]
                         
         return visible
+
+    def get_input_board(self) -> np.ndarray:
+        """
+        Get the input board for the model.
+        
+        Returns:
+            3D array. Treated as a 2D board with each row, column cell represented as:
+            - [0, 0, 0]: hidden cell.
+            - [1, 0-8, 0]: revealed cell with number of adjacent mines.
+            - [0, 0, 1]: flagged cell.
+            - [0, 0, 2]: revealed mine - although this should never actually happen in the model.
+        """
+        input_board = np.full((self.rows, self.cols, 3), 0, dtype=np.float16)
+
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if self.cell_states[row, col] == CellState.HIDDEN.value:
+                    input_board[row, col] = [0, 0, 0]
+                elif self.cell_states[row, col] == CellState.REVEALED.value:
+                    if self.mine_board[row, col]:
+                        input_board[row, col] = [0, 0, 2]
+                    else:
+                        input_board[row, col] = [1, self.adjacent_mines[row, col] / 1.5, 0]
+                elif self.cell_states[row, col] == CellState.FLAGGED.value:
+                    input_board[row, col] = [0, 0, 1]
+
+        return input_board
         
     def get_game_state(self) -> GameState:
         """Get the current game state."""

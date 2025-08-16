@@ -157,3 +157,22 @@ Initial thoughts:
   - rl_model_25-08-16_16-38_iteration_180: {'wins': 29, 'losses': 4971, 'avg_moves_to_win': '24.34', 'avg_moves_to_lose': '8.32'}
   - rl_model_25-08-16_16-44_iteration_210: {'wins': 35, 'losses': 4965, 'avg_moves_to_win': '25.34', 'avg_moves_to_lose': '8.57'}
   - rl_model_25-08-16_16-49_iteration_240: {'wins': 49, 'losses': 4951, 'avg_moves_to_win': '26.16', 'avg_moves_to_lose': '8.71'}
+
+* OK I'm going to try changing my approach a little. I'll delete all of my existing models to clear things out, and then I'm going to actually change the input format to have 3 dimensions: one says is the cell visible or not, one says if it is flagged or not, and one says how many adjacent mines there are. This will hopefully give the network less to learn (as it won't need to waste time on interpreting these facts from the input).
+  - rl_model_25-08-16_17-07_iteration_0: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '10.00', 'avg_moves_to_lose': '4.79'}
+  - rl_model_25-08-16_17-12_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.60'}
+  - rl_model_25-08-16_17-17_iteration_60: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.59'}
+  - rl_model_25-08-16_17-22_iteration_90: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.59'}
+
+* OK so this version isn't working at all. I must be doing something quite wrong here!
+* Hmm so one quick bug - not the cause I suspect - but if the first move was a flag, there would be no mines for it! Have fixed that. And I've attempted to calculate the average value for non-zero adajacent numbers of mines (seems to be about 1.4) so I'm roughly normalising this field in the input vector by dividing it by 1.5.
+  - rl_model_25-08-16_17-25_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '1.58'}
+  - rl_model_25-08-16_17-30_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.60'}
+
+* From a _weirdly terrible_ baseline of losing in 1.58 moves, 3.6 is an improvement. Let's see where it goes from there.
+  - rl_model_25-08-16_17-35_iteration_60: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.60'}
+  - rl_model_25-08-16_17-40_iteration_90: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.59'}
+
+* I've improved a few inefficiencies by finding vectorised way of doing stuff that had previously been in Python loops; and keeping a running track of the remaining valid moves, instead of having to recalculate them every time. Doesn't really help the main issue, but hopefully will help to accelerate future training runs (although the time is dominated by inference and training at this point).
+
+* I'm going to give it another go now, but also increase the batch size, and make the model itself smaller. I'll commit first and then make those tweaks.

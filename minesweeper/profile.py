@@ -2,12 +2,14 @@ import time
 
 PROFILES = {}
 PROFILE_STARTS = {}
+PROFILE_CALLS = {}
 
 # Record the start time of a profile with label `label` in PROFILE_STARTS.
 def profile_start(label: str):
     if label in PROFILE_STARTS:
         raise ValueError(f"Profile '{label}' has already been started.")
     PROFILE_STARTS[label] = time.perf_counter()
+    PROFILE_CALLS[label] = PROFILE_CALLS.get(label, 0) + 1
 
 # Record the end time of a profile with label `label` in PROFILES.
 def profile_end(label: str):
@@ -29,4 +31,4 @@ def get_profile(label: str) -> float:
 def print_profiles():
     """Print all recorded profiles."""
     for label, elapsed in PROFILES.items():
-        print(f"{label}: {elapsed:.6f} seconds")
+        print(f"{label}: {elapsed:.6f} seconds, over {PROFILE_CALLS[label]} calls")

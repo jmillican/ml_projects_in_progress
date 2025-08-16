@@ -18,11 +18,10 @@ models_dir = os.path.join(os.path.dirname(__file__), 'models')
 def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndarray:
     profile_start("Predict")
     profile_start("PredictGetVisible")
-    visible_board = game.get_visible_board()
+    input_board = game.get_input_board()
     profile_end("PredictGetVisible")
 
-    reshaped_input = visible_board.reshape(1, BOARD_SIZE, BOARD_SIZE, 1)
-    # Use model() instead of model.predict() for single predictions - much faster!
+    reshaped_input = input_board.reshape(1, BOARD_SIZE, BOARD_SIZE, 3)
     actions = model(reshaped_input, training=False).numpy()
     reshaped = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
     profile_end("Predict")
@@ -30,7 +29,7 @@ def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndar
 
 def produce_model_predictions_batch(games: list[Minesweeper], model: TfKerasModel) -> np.ndarray:
     profile_start("PredictBatch")
-    model_inputs = [game.get_visible_board().reshape(1, BOARD_SIZE, BOARD_SIZE, 1) for game in games]
+    model_inputs = [game.get_input_board().reshape(1, BOARD_SIZE, BOARD_SIZE, 3) for game in games]
 
     actions = model.predict(np.vstack(model_inputs), verbose=0)
     reshaped = actions.reshape(len(games), BOARD_SIZE, BOARD_SIZE, 2)
@@ -39,17 +38,22 @@ def produce_model_predictions_batch(games: list[Minesweeper], model: TfKerasMode
 
 def decide_next_move_from_prediction(game: Minesweeper, actions: np.ndarray) -> tuple[int, int, CellState]:
     profile_start("DecideNextMoveFromPrediction")
-    visible_board = game.get_visible_board()
-    valid_moves = []
-    for row in range(BOARD_SIZE):
-        for col in range(BOARD_SIZE):
-            if visible_board[row, col] == -1:  # Cell is hidden
-                valid_moves.append((actions[row, col, 0], (row, col, CellState.REVEALED)))
-                valid_moves.append((actions[row, col, 1], (row, col, CellState.FLAGGED)))
 
-    valid_moves.sort(reverse=True, key=lambda x: x[0])  # Sort by action value
+    valid_moves_mask = game.valid_moves_mask
+    masked_actions = actions * valid_moves_mask
+
+    # It's possible that all moves have a negative value, in which case the max will now be a masked value,
+    # because the mask is 0. Let's force all masked actions to be negative infinity.
+    masked_actions[valid_moves_mask == 0] = -np.inf
+
+    # # Get the indices of the maximum action value
+    max_indices = np.unravel_index(np.argmax(masked_actions, axis=None), masked_actions.shape)
+    mask_implementation_row, mask_implementation_col, mask_implementation_type_index = max_indices
+    mask_implementation_type = CellState.REVEALED if mask_implementation_type_index == 0 else CellState.FLAGGED
+    result = (int(mask_implementation_row), int(mask_implementation_col), mask_implementation_type)
+
     profile_end("DecideNextMoveFromPrediction")
-    return valid_moves[0][1]   # Return the top-ranked next move
+    return result
 
 def decide_next_move_with_model(game: Minesweeper, model) -> tuple[int, int, CellState]:
     """
@@ -76,6 +80,7 @@ def decide_next_move_with_rng(game: Minesweeper, rng: np.random.RandomState) -> 
     Returns:
         A tuple containing the row, column, and cell state (REVEALED or FLAGGED).
     """
+    profile_start("DecideNextMoveWithRNG")
     visible_board = game.get_visible_board()
     row = rng.randint(0, BOARD_SIZE)
     col = rng.randint(0, BOARD_SIZE)
@@ -95,6 +100,7 @@ def decide_next_move_with_rng(game: Minesweeper, rng: np.random.RandomState) -> 
     else:
         state = CellState.REVEALED if rng.rand() < mine_proportion else CellState.FLAGGED
 
+    profile_end("DecideNextMoveWithRNG")
     return row, col, state
 
 def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tuple[int, GameState]]:
@@ -147,6 +153,10 @@ def main():
     for offset in range(offsets_to_load):
         # Load the latest model chronologically from the models directory
         model, model_name = load_latest_model(offset=offset)
+
+        # Show model architecture and parameter count
+        print("\nModel Summary:")
+        model.summary()
 
         results = {
             'model1': {'wins': 0, 'losses': 0, 'total_moves_in_winning_games': 0, 'total_moves_in_losing_games': 0},

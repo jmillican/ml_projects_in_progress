@@ -9,15 +9,15 @@ from tensorflow.keras import Model as TfKerasModel  # type: ignore
 import tensorflow.keras # type: ignore
 from .profile import profile_start, profile_end, get_profile, print_profiles
 from datetime import datetime
+from .print_board import print_board
 
 discount_factor = 0.9  # Discount factor for future rewards
-RANDOM_PROBABILITY = 0.08  # Probability of making a random move instead of the model's prediction
+RANDOM_PROBABILITY = 0.02  # Probability of making a random move instead of the model's prediction
 
-training_data_dir = os.path.join(os.path.dirname(__file__), 'rl_training_data')
-if not os.path.exists(training_data_dir):
-    os.makedirs(training_data_dir)
-
-def save_rl_training_data(boards, reward_vectors, filename_prefix='rl_training_data', iteration=0):
+def save_rl_training_data(boards, target_vectors, filename_prefix='rl_training_data', iteration=0):
+    training_data_dir = os.path.join(os.path.dirname(__file__), 'rl_training_data')
+    if not os.path.exists(training_data_dir):
+        os.makedirs(training_data_dir)
 
     filename = f"{filename_prefix}_{iteration}.npz"
     training_data_file = os.path.join(training_data_dir, filename)
@@ -27,22 +27,22 @@ def save_rl_training_data(boards, reward_vectors, filename_prefix='rl_training_d
         raise Exception("Training data file was created mid-run.")
 
     boards_to_save = np.array(boards, dtype=np.float32)
-    reward_vectors = np.array(reward_vectors, dtype=np.float32)
+    target_vectors = np.array(target_vectors, dtype=np.float32)
 
-    np.savez_compressed(training_data_file, boards=boards_to_save, reward_vectors=reward_vectors)
+    np.savez_compressed(training_data_file, boards=boards_to_save, target_vectors=target_vectors)
     print(f"Training data saved to {training_data_file}.")
 
-def load_rl_training_data(filename_prefix='rl_training_data', iteration=0) -> tuple[np.ndarray, np.ndarray]:
-    filename = f"{filename_prefix}_{iteration}.npz"
-    training_data_file = os.path.join(training_data_dir, filename)
+# def load_rl_training_data(filename_prefix='rl_training_data', iteration=0) -> tuple[np.ndarray, np.ndarray]:
+#     filename = f"{filename_prefix}_{iteration}.npz"
+#     training_data_file = os.path.join(training_data_dir, filename)
 
-    if not os.path.exists(training_data_file):
-        raise Exception("Training data file does not exist.")
+#     if not os.path.exists(training_data_file):
+#         raise Exception("Training data file does not exist.")
 
-    data = np.load(training_data_file)
-    boards = data['boards']
-    reward_vectors = data['reward_vectors']
-    return boards, reward_vectors
+#     data = np.load(training_data_file)
+#     boards = data['boards']
+#     reward_vectors = data['reward_vectors']
+#     return boards, reward_vectors
 
 NUM_IN_RUN = 10000
 BATCH_SIZE = 500
@@ -52,7 +52,7 @@ def main():
     # model = load_latest_model(verbose=True)
     
     model = create_model(
-        input_shape=(9, 9, 1,),
+        input_shape=(9, 9, 3,),
         output_shape=(9*9*2,))
 
     rng = np.random.RandomState(123456)  # Fixed seed for reproducibility
@@ -65,6 +65,7 @@ def main():
     for rl_run in range(10000):
         boards = []
         reward_vectors = []
+        target_vectors = []
         # Save the model after every 30 iterations
         if rl_run % 30 == 0:
             print(f"Saving model after iteration {rl_run}...")
@@ -73,14 +74,16 @@ def main():
 
             save_model(model, model_name)
 
-        print(f"Running RL iteration {rl_run + 1}...")
+        print(f"\nRunning RL iteration {rl_run + 1}...")
         for batch_num in tqdm(range(iterations)):
             profile_start("RL Game")
 
+            profile_start("Create Games")
             games = [
                 Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=rng.randint(2**32 - 1))
                 for _ in range(BATCH_SIZE)
             ]
+            profile_end("Create Games")
 
             predictions = produce_model_predictions_batch(games, model)
 
@@ -88,15 +91,14 @@ def main():
             while games:
                 move += 1
                 rewards = [0.0] * len(games)
-                start_boards = []
+                start_input_boards = []
                 visible_boards = []
                 rows = [0] * len(games)
                 cols = [0] * len(games)
                 states = [CellState.HIDDEN] * len(games)
 
                 for i, game in enumerate(games):
-                    start_boards.append(game.get_visible_board())
-                    reward = 0.0
+                    start_input_boards.append(game.get_input_board())
                     if rng.rand() < RANDOM_PROBABILITY:
                         # Make a random move
                         row, col, state = decide_next_move_with_rng(game, rng)
@@ -131,28 +133,34 @@ def main():
                 predictions = produce_model_predictions_batch(games, model)
 
                 for i, game in enumerate(games):
+                    target = rewards[i]
                     if game.get_game_state() == GameState.PLAYING:
-                        max_next_q = None   
-                        for r in range(BOARD_SIZE):
-                            for c in range(BOARD_SIZE):
-                                if visible_boards[i][r, c] == -1:
-                                    if max_next_q is None or predictions[i][r, c, 0] > max_next_q:
-                                        max_next_q = predictions[i][r, c, 0]
-                                    if predictions[i][r, c, 1] > max_next_q:
-                                        max_next_q = predictions[i][r, c, 1]
-                        if max_next_q is None:
+                        profile_start("Calculate Next Q")
+
+                        # Calculate the maximum Q value for the next state
+                        # This is the max Q value for the next state, which is used to calculate the
+                        # target for the current state.
+
+                        valid_moves_mask = game.valid_moves_mask
+                        masked_predictions = predictions[i] * valid_moves_mask
+                        # It's possible that all moves have a negative value, in which case the max will now be a masked value,
+                        # because the mask is 0. Let's force all masked actions to be negative infinity.
+                        masked_predictions[valid_moves_mask == 0] = -np.inf
+                        max_next_q = np.max(masked_predictions)
+                        if max_next_q == -np.inf:
                             raise Exception("No valid actions found in the model's predictions.")
-                        # Discounted future reward
-                        rewards[i] += max_next_q * discount_factor
-                    boards.append(start_boards[i])
-                    reward_vector = np.zeros((BOARD_SIZE, BOARD_SIZE, 2), dtype=np.float32)
+
+                        target += max_next_q * discount_factor
+                        profile_end("Calculate Next Q")
+                    boards.append(start_input_boards[i])
+                    target_vector = np.zeros((BOARD_SIZE, BOARD_SIZE, 2), dtype=np.float32)
                     if states[i] == CellState.REVEALED:
-                        reward_vector[rows[i], cols[i], 0] = rewards[i]  # Reward for revealing a cell
+                        target_vector[rows[i], cols[i], 0] = target  # Reward for revealing a cell
                     elif states[i] == CellState.FLAGGED:
-                        reward_vector[rows[i], cols[i], 1] = rewards[i]  # Reward for flagging a mine
+                        target_vector[rows[i], cols[i], 1] = target  # Reward for flagging a mine
                     else:
                         raise Exception(f"Invalid state: {states[i]}")
-                    reward_vectors.append(reward_vector)
+                    target_vectors.append(target_vector)
                 games = [game for game in games if game.get_game_state() == GameState.PLAYING]
             profile_end("RL Game")
             if len(boards) >= TARGET_SAMPLES_PER_ITERATION:
@@ -170,11 +178,16 @@ def main():
             0.000001  # 1e-6, adjust as needed
         )
         
+        profile_start("Model Fit")
         model.fit(
-            np.array(boards).reshape(-1, 9, 9, 1),
-            np.array(reward_vectors).reshape(-1, 9, 9, 2),
+            np.array(boards).reshape(-1, 9, 9, 3),
+            np.array(target_vectors).reshape(-1, 9, 9, 2),
             epochs=1,
             verbose=1)
+        profile_end("Model Fit")
+
+        print("\nProfiling stats:\n")
+        print_profiles()
 
 if __name__ == "__main__":
     main()
