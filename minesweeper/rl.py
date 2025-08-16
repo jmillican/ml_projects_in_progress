@@ -6,9 +6,11 @@ import numpy as np
 import os
 import tensorflow as tf
 from tensorflow.keras import Model as TfKerasModel  # type: ignore
+import tf.keras # type: ignore
 from .profile import profile_start, profile_end, get_profile, print_profiles
 
 discount_factor = 0.9  # Discount factor for future rewards
+RANDOM_PROBABILITY = 0.05  # Probability of making a random move instead of the model's prediction
 
 training_data_dir = os.path.join(os.path.dirname(__file__), 'rl_training_data')
 if not os.path.exists(training_data_dir):
@@ -41,8 +43,8 @@ def load_rl_training_data(filename_prefix='rl_training_data', iteration=0) -> tu
     reward_vectors = data['reward_vectors']
     return boards, reward_vectors
 
-NUM_IN_RUN = 50000
-BATCH_SIZE = 1000
+NUM_IN_RUN = 100
+BATCH_SIZE = 100
 
 def main():
     model = load_latest_model(verbose=True)
@@ -51,8 +53,8 @@ def main():
     boards = []
     reward_vectors = []
 
-    for rl_run in range(10, 20):
-        print(f"Running RL iteration {rl_run + 1}...")
+    for rl_run in range(10000):
+        print(f"Running RL iteration {rl_run}...")
 
         if NUM_IN_RUN % BATCH_SIZE != 0:
             raise ValueError("NUM_IN_RUN must be divisible by BATCH_SIZE for this setup.")
@@ -81,7 +83,12 @@ def main():
                 for i, game in enumerate(games):
                     start_boards.append(game.get_visible_board())
                     reward = 0.0
-                    row, col, state = decide_next_move_from_prediction(game, predictions[i])
+                    if rng.rand() < RANDOM_PROBABILITY:
+                        # Make a random move
+                        row, col, state = decide_next_move_with_rng(game, rng)
+                    else:
+                        # Use the model's prediction
+                        row, col, state = decide_next_move_from_prediction(game, predictions[i])
                     rows[i] = row
                     cols[i] = col
                     states[i] = state
@@ -141,31 +148,22 @@ def main():
         save_rl_training_data(boards, reward_vectors, filename_prefix='rl_training_data', iteration=rl_run)
         # boards, reward_vectors = load_rl_training_data(filename_prefix='rl_training_data', iteration=rl_run)
 
-        # Add early stopping to prevent overfitting
-        early_stopping = tf.keras.callbacks.EarlyStopping(  # type: ignore
-            monitor='val_loss',
-            patience=3,
-            restore_best_weights=True,
-            verbose=1
+        # Update learning rate for RL (lower than pre-training)
+        tf.keras.backend.set_value(
+            model.optimizer.learning_rate,
+            0.000001  # 1e-6, adjust as needed
         )
         
-        # Add ReduceLROnPlateau to reduce learning rate when loss plateaus
-        reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(   # type: ignore
-            monitor='val_loss',
-            factor=0.5,
-            patience=2,
-            min_lr=1e-7,
-            verbose=1
-        )
-
         model.fit(
             np.array(boards).reshape(-1, 9, 9, 1),
             np.array(reward_vectors).reshape(-1, 9, 9, 2),
             epochs=5,
-            callbacks=[early_stopping, reduce_lr],
             verbose=1)
         
-        save_model(model, f"rl_conv_model_iteration_{rl_run + 1}")
+        # Save the model after every 10 iterations
+        if rl_run % 10 == 0:
+            print(f"Saving model after iteration {rl_run + 1}...")
+            save_model(model, f"rl_conv_model_iteration_{rl_run + 1}")
 
 if __name__ == "__main__":
     main()
