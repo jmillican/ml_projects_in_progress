@@ -140,3 +140,20 @@ Initial thoughts:
   - rl_model_25-08-16_15-49_iteration_180: {'wins': 124, 'losses': 4876, 'avg_moves_to_win': '28.02', 'avg_moves_to_lose': '8.77'}
 
 * OK so I'm a bit of a fool. I wasn't resetting the training data between runs. It was increasing because it was an ever-expanding list, not because the game was lasting longer. It's good that the model was improving; but probably this was limiting its ability to improve (albeit weirdly maybe making the training more stable). Let's fix that and then give it another go.
+  - rl_model_25-08-16_15-54_iteration_0: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '9.50', 'avg_moves_to_lose': '5.63'}
+  - rl_model_25-08-16_15-56_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.60'}
+  - rl_model_25-08-16_15-57_iteration_60: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.60'}
+
+* OK I'm increasing NUM_IN_RUN to try to address this - maybe it's just too little data per iteration.
+  - rl_model_25-08-16_15-58_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '6.34'}
+  - rl_model_25-08-16_16-07_iteration_30: {'wins': 8, 'losses': 4992, 'avg_moves_to_win': '20.38', 'avg_moves_to_lose': '6.77'}
+
+* And now I'm gonna increase my BATCH_SIZE to 500 because this is a bit slow per batch.
+  - rl_model_25-08-16_16-13_iteration_30: {'wins': 10, 'losses': 4990, 'avg_moves_to_win': '19.30', 'avg_moves_to_lose': '6.92'}
+  - rl_model_25-08-16_16-18_iteration_60: {'wins': 9, 'losses': 4991, 'avg_moves_to_win': '22.56', 'avg_moves_to_lose': '7.32'}
+  - rl_model_25-08-16_16-23_iteration_90: {'wins': 24, 'losses': 4976, 'avg_moves_to_win': '19.92', 'avg_moves_to_lose': '7.57'}
+  - rl_model_25-08-16_16-28_iteration_120: {'wins': 25, 'losses': 4975, 'avg_moves_to_win': '21.04', 'avg_moves_to_lose': '7.93'}
+  - rl_model_25-08-16_16-33_iteration_150: {'wins': 34, 'losses': 4966, 'avg_moves_to_win': '22.97', 'avg_moves_to_lose': '8.08'}
+  - rl_model_25-08-16_16-38_iteration_180: {'wins': 29, 'losses': 4971, 'avg_moves_to_win': '24.34', 'avg_moves_to_lose': '8.32'}
+  - rl_model_25-08-16_16-44_iteration_210: {'wins': 35, 'losses': 4965, 'avg_moves_to_win': '25.34', 'avg_moves_to_lose': '8.57'}
+  - rl_model_25-08-16_16-49_iteration_240: {'wins': 49, 'losses': 4951, 'avg_moves_to_win': '26.16', 'avg_moves_to_lose': '8.71'}

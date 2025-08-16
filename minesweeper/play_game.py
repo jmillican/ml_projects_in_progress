@@ -142,68 +142,40 @@ def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tu
 def main():
     r = np.random.RandomState(2 ** 31 - 1)
 
-    # Load the latest model chronologically from the models directory
-    model1, model1_name = load_latest_model()
-    # Load the second-latest model chronologically from the models directory
-    # model2 = load_latest_model(offset=1)
-    # model2 = load_model("rl_conv_model_iteration_12")
+    offsets_to_load = 1
 
-    # model1_prevails = 0
-    # model2_prevails = 0
-    # draw = 0
-    results = {
-        'model1': {'wins': 0, 'losses': 0, 'total_moves_in_winning_games': 0, 'total_moves_in_losing_games': 0},
-        'model2': {'wins': 0, 'losses': 0, 'total_moves_in_winning_games': 0, 'total_moves_in_losing_games': 0},
-    }
+    for offset in range(offsets_to_load):
+        # Load the latest model chronologically from the models directory
+        model, model_name = load_latest_model(offset=offset)
 
-    game_seeds = [r.randint(2**32 - 1) for _ in range(5000)]
-    print(f"Playing 5000 games with model 1 and model 2...")
-    print("Playing model 1...")
-    model1_results = play_games_with_model(game_seeds, model1)
-    # print("Playing model 2...")
-    # model2_results = play_games_with_model(game_seeds, model2)
+        results = {
+            'model1': {'wins': 0, 'losses': 0, 'total_moves_in_winning_games': 0, 'total_moves_in_losing_games': 0},
+        }
 
-    for i in range(len(game_seeds)):
-        model1_result = model1_results[i]
-        # model2_result = model2_results[i]
+        game_seeds = [r.randint(2**32 - 1) for _ in range(5000)]
+        print(f"Playing 5000 games with the model...")
+        print("Playing model 1...")
+        model_results = play_games_with_model(game_seeds, model)
 
-        # model1_prevailed = (model1_result[1] == GameState.WON and model2_result[1] == GameState.LOST) or \
-        #             (model1_result[1] == GameState.WON and model2_result[1] == GameState.WON and model1_result[0] < model2_result[0]) or \
-        #             (model1_result[1] == GameState.LOST and model2_result[1] == GameState.LOST and model1_result[0] > model2_result[0])
-        # model2_prevailed = (model2_result[1] == GameState.WON and model1_result[1] == GameState.LOST) or \
-        #         (model2_result[1] == GameState.WON and model1_result[1] == GameState.WON and model2_result[0] < model1_result[0]) or \
-        #         (model2_result[1] == GameState.LOST and model1_result[1] == GameState.LOST and model2_result[0] > model1_result[0])
-        
-        if model1_result[1] == GameState.WON:
-            results['model1']['wins'] += 1
-            results['model1']['total_moves_in_winning_games'] += model1_result[0]
-        else:
-            results['model1']['losses'] += 1
-            results['model1']['total_moves_in_losing_games'] += model1_result[0]
-        # if model2_result[1] == GameState.WON:
-        #     results['model2']['wins'] += 1
-        # else:
-        #     results['model2']['losses'] += 1
+        for i in range(len(game_seeds)):
+            model_result = model_results[i]
+            
+            if model_result[1] == GameState.WON:
+                results['model1']['wins'] += 1
+                results['model1']['total_moves_in_winning_games'] += model_result[0]
+            else:
+                results['model1']['losses'] += 1
+                results['model1']['total_moves_in_losing_games'] += model_result[0]
 
-        # if model1_prevailed:
-        #     model1_prevails += 1
-        # elif model2_prevailed:
-        #     model2_prevails += 1
-        # else:
-        #     draw += 1
-
-    # print(f"Model 1 is better: {model1_prevails}, Model 2 better: {model2_prevails}, Draws: {draw}")
-    # print(results)
-
-    avg_moves_to_win = results['model1']['total_moves_in_winning_games'] / results['model1']['wins'] if results['model1']['wins'] > 0 else 0.0
-    avg_moves_to_lose = results['model1']['total_moves_in_losing_games'] / results['model1']['losses'] if results['model1']['losses'] > 0 else 0.0
-    model1_results = {
-        'wins': results['model1']['wins'],
-        'losses': results['model1']['losses'],
-        'avg_moves_to_win': f"{avg_moves_to_win:.2f}",
-        'avg_moves_to_lose': f"{avg_moves_to_lose:.2f}",
-    }
-    print(f"{model1_name}: {model1_results}")
+        avg_moves_to_win = results['model1']['total_moves_in_winning_games'] / results['model1']['wins'] if results['model1']['wins'] > 0 else 0.0
+        avg_moves_to_lose = results['model1']['total_moves_in_losing_games'] / results['model1']['losses'] if results['model1']['losses'] > 0 else 0.0
+        model1_results = {
+            'wins': results['model1']['wins'],
+            'losses': results['model1']['losses'],
+            'avg_moves_to_win': f"{avg_moves_to_win:.2f}",
+            'avg_moves_to_lose': f"{avg_moves_to_lose:.2f}",
+        }
+        print(f"{model_name}: {model1_results}")
 
 if __name__ == "__main__":
     main()

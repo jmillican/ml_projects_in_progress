@@ -44,8 +44,8 @@ def load_rl_training_data(filename_prefix='rl_training_data', iteration=0) -> tu
     reward_vectors = data['reward_vectors']
     return boards, reward_vectors
 
-NUM_IN_RUN = 1000
-BATCH_SIZE = 100
+NUM_IN_RUN = 10000
+BATCH_SIZE = 500
 TARGET_SAMPLES_PER_ITERATION = 20000
 
 def main():
@@ -57,14 +57,14 @@ def main():
 
     rng = np.random.RandomState(123456)  # Fixed seed for reproducibility
 
-    boards = []
-    reward_vectors = []
 
     if NUM_IN_RUN % BATCH_SIZE != 0:
         raise ValueError("NUM_IN_RUN must be divisible by BATCH_SIZE for this setup.")
     iterations = NUM_IN_RUN // BATCH_SIZE
     
     for rl_run in range(10000):
+        boards = []
+        reward_vectors = []
         # Save the model after every 30 iterations
         if rl_run % 30 == 0:
             print(f"Saving model after iteration {rl_run}...")
