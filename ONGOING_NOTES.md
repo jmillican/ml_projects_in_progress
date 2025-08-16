@@ -37,55 +37,55 @@ Initial thoughts:
 * Actually doing this is quite promising. With a couple of different random seeds I'm seeing:
     - Model wins: 794, RNG wins: 55, Draws: 151
     - Model wins: 803, RNG wins: 55, Draws: 142
- - ...so it's not good per se, but it's better than random. (Random against itself with a different seed is pretty even, unsurprisingly).
+  - ...so it's not good per se, but it's better than random. (Random against itself with a different seed is pretty even, unsurprisingly).
 
- * I'm concerned that I should really be masking my loss function, so that I stop training for any neurons that I'm ignoring in any given situation. Let's give that a go. In my training data, these should be the zeroed values, so I don't think I need to re-generate that data.
- * OK yes, that seems to have been somewhat effective! Not *very*, but slightly better.
-   - Model wins: 855, RNG wins: 51, Draws: 94
-   - Model wins: 856, RNG wins: 40, Draws: 104
- * Hang on - I should also play off the new version against the old version.
- * And yes, the new one seems to be slightly better:
-   - Model 1 wins: 55, Model 2 wins: 36, Draws: 9
-   - Model 1 wins: 59, Model 2 wins: 36, Draws: 5
- * It's probably time for me to actually do some reinforcement learning now; instead of just pre-training models to be better-than-random. So I should go learn how to actually do that!
+* I'm concerned that I should really be masking my loss function, so that I stop training for any neurons that I'm ignoring in any given situation. Let's give that a go. In my training data, these should be the zeroed values, so I don't think I need to re-generate that data.
+* OK yes, that seems to have been somewhat effective! Not *very*, but slightly better.
+  - Model wins: 855, RNG wins: 51, Draws: 94
+  - Model wins: 856, RNG wins: 40, Draws: 104
+* Hang on - I should also play off the new version against the old version.
+* And yes, the new one seems to be slightly better:
+  - Model 1 wins: 55, Model 2 wins: 36, Draws: 9
+  - Model 1 wins: 59, Model 2 wins: 36, Draws: 5
+* It's probably time for me to actually do some reinforcement learning now; instead of just pre-training models to be better-than-random. So I should go learn how to actually do that!
 
- * OK so I tried to do some RL, in rl.py. I think there's a good chance I didn't get enough data or just misunderstood what I was doing, but it seems to have made the model significantly worse!
-   - Model 1 wins: 13, Model 2 wins: 73, Draws: 14
+* OK so I tried to do some RL, in rl.py. I think there's a good chance I didn't get enough data or just misunderstood what I was doing, but it seems to have made the model significantly worse!
+  - Model 1 wins: 13, Model 2 wins: 73, Draws: 14
 
- * ..although the second iteration of RL seems to have done better (each time Model 1 is the latest, and Model 2 the second-most-recent).
-   - Model 1 wins: 76, Model 2 wins: 15, Draws: 9
-   - Model 1 wins: 356, Model 2 wins: 93, Draws: 51
- * Let's try it against the second most recent.
-   - Model 1 wins: 192, Model 2 wins: 247, Draws: 61
-   ...yup the original pre-trained model was better.
- * I think it's time to explore a different neural network architecture. I've just learned that I could be using Convolutional Neural Nets (which should have occurred to me before!), and this might help me to do a lot better, a lot faster, with less data. Let's give it a go!
+* ..although the second iteration of RL seems to have done better (each time Model 1 is the latest, and Model 2 the second-most-recent).
+  - Model 1 wins: 76, Model 2 wins: 15, Draws: 9
+  - Model 1 wins: 356, Model 2 wins: 93, Draws: 51
+* Let's try it against the second most recent.
+  - Model 1 wins: 192, Model 2 wins: 247, Draws: 61
+  ...yup the original pre-trained model was better.
+* I think it's time to explore a different neural network architecture. I've just learned that I could be using Convolutional Neural Nets (which should have occurred to me before!), and this might help me to do a lot better, a lot faster, with less data. Let's give it a go!
 
 
- * OK so first attempt at that didn't go amazingly.
-   - Loading model: minesweeper_model_25-08-15_01-56
-   - Loading previous model: minesweeper_model_25-08-14_23-21
-   - Model 1 wins: 37, Model 2 wins: 51, Draws: 12
- * I'll try tweaking the neural net's architecture. 
+* OK so first attempt at that didn't go amazingly.
+  - Loading model: minesweeper_model_25-08-15_01-56
+  - Loading previous model: minesweeper_model_25-08-14_23-21
+  - Model 1 wins: 37, Model 2 wins: 51, Draws: 12
+* I'll try tweaking the neural net's architecture. 
 
- * That was a little more promising!
-   - Loading model: minesweeper_model_25-08-15_02-24
-   - Loading previous model: minesweeper_model_25-08-14_23-21
-   - Model 1 wins: 321, Model 2 wins: 155, Draws: 24
+* That was a little more promising!
+  - Loading model: minesweeper_model_25-08-15_02-24
+  - Loading previous model: minesweeper_model_25-08-14_23-21
+  - Model 1 wins: 321, Model 2 wins: 155, Draws: 24
 
- * With a slightly new architecture (only convolutional layers, no dense layers, far fewer parameters), I seem to be getting slightly better results again. Within a margin of error I'd say, but at least being comparable with fewer parameters is probably a win!
-   - Loading model: minesweeper_model_25-08-15_02-44
-   - Loading previous model: minesweeper_model_25-08-15_02-24
-   - Model 1 wins: 242, Model 2 wins: 221, Draws: 37
+* With a slightly new architecture (only convolutional layers, no dense layers, far fewer parameters), I seem to be getting slightly better results again. Within a margin of error I'd say, but at least being comparable with fewer parameters is probably a win!
+  - Loading model: minesweeper_model_25-08-15_02-44
+  - Loading previous model: minesweeper_model_25-08-15_02-24
+  - Model 1 wins: 242, Model 2 wins: 221, Draws: 37
 
- * Reinforcement learning a little seems to improve things!
-   - Loading model: rl_conv_model_iteration_1
-   - Loading previous model: minesweeper_model_25-08-15_02-44
-   - Model 1 wins: 143, Model 2 wins: 113, Draws: 244
+* Reinforcement learning a little seems to improve things!
+  - Loading model: rl_conv_model_iteration_1
+  - Loading previous model: minesweeper_model_25-08-15_02-44
+  - Model 1 wins: 143, Model 2 wins: 113, Draws: 244
 
- * Iterating further seems to improve things yet again!
-   - Loading model: rl_conv_model_iteration_10
-   - Loading previous model: minesweeper_model_25-08-15_02-44
-   - Model 1 wins: 727, Model 2 wins: 426, Draws: 847
+* Iterating further seems to improve things yet again!
+  - Loading model: rl_conv_model_iteration_10
+  - Loading previous model: minesweeper_model_25-08-15_02-44
+  - Model 1 wins: 727, Model 2 wins: 426, Draws: 847
 
 ## 16-08-2025
 * I've realised over the past couple of days that the my approach to Spider Solitaire was probably highly flawed in a similar manner to my original approach to Minesweeper. Specifically, Minesweeper performance improved with fewer parameters when I used a convolutional network, because this enabled learnings to be generalised across a board which behaves essentially the same across its entire space. Given that Spider Solitaire mainly consists of 10 piles, each of which behaves identically, it makes sense to use an architecture that shares learnings across all of them in the initial layers. That will hopefully enable fewer parameters and less training data - because, for example, two identical boards except for two swapped piles will hopefully then be able to be treated quite similarly, using mostly the same weights.
