@@ -29,6 +29,7 @@ def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndar
     return reshaped
 
 def decide_next_move_from_prediction(game: Minesweeper, actions: np.ndarray) -> tuple[int, int, CellState]:
+    profile_start("DecideNextMoveFromPrediction")
     visible_board = game.get_visible_board()
     valid_moves = []
     for row in range(BOARD_SIZE):
@@ -38,6 +39,7 @@ def decide_next_move_from_prediction(game: Minesweeper, actions: np.ndarray) -> 
                 valid_moves.append((actions[row, col, 1], (row, col, CellState.FLAGGED)))
 
     valid_moves.sort(reverse=True, key=lambda x: x[0])  # Sort by action value
+    profile_end("DecideNextMoveFromPrediction")
     return valid_moves[0][1]   # Return the top-ranked next move
 
 def decide_next_move_with_model(game: Minesweeper, model) -> tuple[int, int, CellState]:
