@@ -10,7 +10,7 @@ from .profile import profile_start, profile_end, print_profiles
 from .basic_config import suppress_tensorflow_logging, force_tensorflow_cpu
 
 suppress_tensorflow_logging()
-force_tensorflow_cpu()
+# force_tensorflow_cpu()
 
 
 models_dir = os.path.join(os.path.dirname(__file__), 'models')
@@ -26,6 +26,15 @@ def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndar
     actions = model(reshaped_input, training=False).numpy()
     reshaped = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
     profile_end("Predict")
+    return reshaped
+
+def produce_model_predictions_batch(games: list[Minesweeper], model: TfKerasModel) -> np.ndarray:
+    profile_start("PredictBatch")
+    model_inputs = [game.get_visible_board().reshape(1, BOARD_SIZE, BOARD_SIZE, 1) for game in games]
+
+    actions = model.predict(np.vstack(model_inputs), verbose=0)
+    reshaped = actions.reshape(len(games), BOARD_SIZE, BOARD_SIZE, 2)
+    profile_end("PredictBatch")
     return reshaped
 
 def decide_next_move_from_prediction(game: Minesweeper, actions: np.ndarray) -> tuple[int, int, CellState]:
@@ -88,7 +97,7 @@ def decide_next_move_with_rng(game: Minesweeper, rng: np.random.RandomState) -> 
 
     return row, col, state
 
-def play_game_with_model(game_seed: int, model: TfKerasModel) -> tuple[int, GameState]:
+def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tuple[int, GameState]]:
     """
     Play a Minesweeper game using the provided model to decide moves.
     
@@ -99,19 +108,36 @@ def play_game_with_model(game_seed: int, model: TfKerasModel) -> tuple[int, Game
     Returns:
         A tuple containing the number of moves made and the final game state.
     """
-    game = Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=game_seed)
-    i = 0
-    while game.get_game_state() == GameState.PLAYING:
-        row, col, state = decide_next_move_with_model(game, model)
+    games = [
+        Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=game_seed)
+        for game_seed in game_seeds
+    ]
+    turn = 0
+    num_running_games = len(games)
 
-        if state == CellState.REVEALED:
-            game.reveal(row, col)
-        else:
-            game.flag(row, col)
+    LINE_UP = '\033[1A'
+    LINE_CLEAR = '\x1b[2K'
+    print(f" - Turn {turn}, Games left: {num_running_games}")
 
-        i += 1
+    while num_running_games > 0:
+        turn += 1
+        print(LINE_UP, end=LINE_CLEAR)
+        print(f" - Turn {turn}, Games left: {num_running_games}")
+        predictions = produce_model_predictions_batch(games, model)
 
-    return i, game.get_game_state()
+        for i, game in enumerate(games):
+            if game.get_game_state() == GameState.PLAYING:
+                row, col, state = decide_next_move_from_prediction(game, predictions[i])
+
+                if state == CellState.REVEALED:
+                    game.reveal(row, col)
+                else:
+                    game.flag(row, col)
+
+                if game.get_game_state() != GameState.PLAYING:
+                    num_running_games -= 1
+
+    return [(game.num_moves, game.get_game_state()) for game in games]
 
 def main():
     r = np.random.RandomState(2 ** 31 - 1)
@@ -123,16 +149,22 @@ def main():
 
     model1_prevails = 0
     model2_prevails = 0
+    draw = 0
     results = {
         'model1': {'wins': 0, 'losses': 0},
         'model2': {'wins': 0, 'losses': 0},
     }
-    draw = 0
-    for i in tqdm(range(5000)):
-        game_seed = r.randint(2 ** 32 - i)
 
-        model1_result = play_game_with_model(game_seed, model1)
-        model2_result = play_game_with_model(game_seed, model2)
+    game_seeds = [r.randint(2**32 - 1) for _ in range(5000)]
+    print(f"Playing 5000 games with model 1 and model 2...")
+    print("Playing model 1...")
+    model1_results = play_games_with_model(game_seeds, model1)
+    print("Playing model 2...")
+    model2_results = play_games_with_model(game_seeds, model2)
+
+    for i in range(len(game_seeds)):
+        model1_result = model1_results[i]
+        model2_result = model2_results[i]
 
         model1_prevailed = (model1_result[1] == GameState.WON and model2_result[1] == GameState.LOST) or \
                     (model1_result[1] == GameState.WON and model2_result[1] == GameState.WON and model1_result[0] < model2_result[0]) or \

@@ -1,4 +1,4 @@
-from .play_game import decide_next_move_from_prediction, decide_next_move_with_rng
+from .play_game import decide_next_move_from_prediction, decide_next_move_with_rng, produce_model_predictions_batch
 from .model import load_latest_model, save_model
 from .minesweeper import Minesweeper, GameState, CellState, BOARD_SIZE
 from tqdm import tqdm
@@ -40,15 +40,6 @@ def load_rl_training_data(filename_prefix='rl_training_data', iteration=0) -> tu
     boards = data['boards']
     reward_vectors = data['reward_vectors']
     return boards, reward_vectors
-
-def produce_model_predictions_batch(games: list[Minesweeper], model: TfKerasModel) -> np.ndarray:
-    profile_start("PredictBatch")
-    model_inputs = [game.get_visible_board().reshape(1, BOARD_SIZE, BOARD_SIZE, 1) for game in games]
-
-    actions = model.predict(np.vstack(model_inputs), verbose=0)
-    reshaped = actions.reshape(len(games), BOARD_SIZE, BOARD_SIZE, 2)
-    profile_end("PredictBatch")
-    return reshaped
 
 NUM_IN_RUN = 50000
 BATCH_SIZE = 1000

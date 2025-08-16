@@ -181,6 +181,7 @@ class Minesweeper:
             return
 
         self.cell_states[row, col] = CellState.FLAGGED.value
+        self.num_moves += 1
             
     def get_visible_board(self) -> np.ndarray:
         """
