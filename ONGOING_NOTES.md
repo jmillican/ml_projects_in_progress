@@ -186,3 +186,49 @@ Initial thoughts:
   - rl_model_25-08-16_19-03_iteration_210: {'wins': 24, 'losses': 4976, 'avg_moves_to_win': '24.42', 'avg_moves_to_lose': '7.28'}
 
 * OK I think this model is too small. I wanted to shrink it - and I did - but way too much. I'll try one that's still a bit smaller than the previous ones, but bigger than this. Especially 4 neurons in the penultimate layer feels meagre.
+
+* Slightly larger model.
+  - rl_model_25-08-16_19-10_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.24'}
+  - rl_model_25-08-16_19-14_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.59'}
+
+* Very slight improvement, but training this is taking ages. I'm gonna increase my batch size.
+  - rl_model_25-08-16_19-17_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '1.73'}
+
+* Maybe I should go back to some sort of check-pointing. I initially got rid of it because it made everything feel a bit less reproducible - but I could easily fix that by saving slightly more state!
+
+  - rl_model_25-08-16_19-20_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.59'}
+  - rl_model_25-08-16_19-23_iteration_60: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.59'}
+  - rl_model_25-08-16_19-26_iteration_90: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.59'}
+
+* This isn't looking good at all! Let's try to change things up a bit. One of Claude's suggestions is usign leaky_relu. It says to avoid dead neurons, and I guess is inspired by the static performance here, although I'd be a little surprised if that were the issue. It also says I may have just got unlucky on the initialisation lottery. I might try the latter first - just reinitialise the same thing - and then try more model weights or Leaky ReLu.
+
+* Same approach, just reinitialised with new random weights:
+  - rl_model_25-08-16_19-31_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '2.90'}
+  - rl_model_25-08-16_19-34_iteration_30: {'wins': 6, 'losses': 4994, 'avg_moves_to_win': '6.00', 'avg_moves_to_lose': '5.63'}
+  - rl_model_25-08-16_19-38_iteration_60: {'wins': 23, 'losses': 4977, 'avg_moves_to_win': '17.57', 'avg_moves_to_lose': '8.53'}
+  - rl_model_25-08-16_19-42_iteration_90: {'wins': 70, 'losses': 4930, 'avg_moves_to_win': '20.97', 'avg_moves_to_lose': '9.54'}
+  - rl_model_25-08-16_19-45_iteration_120: {'wins': 149, 'losses': 4851, 'avg_moves_to_win': '23.56', 'avg_moves_to_lose': '10.59'}
+
+* Wait... what on earth does avg_moves_to_win of 6.0 mean? We need 10 flags at least to make that happen. Oh unless it was just a very specifically laid-out minesweeper board with a huge empty space. I expect that was probably it. And a pretty lucky model, in that case.
+
+  - rl_model_25-08-16_19-49_iteration_150: {'wins': 233, 'losses': 4767, 'avg_moves_to_win': '24.47', 'avg_moves_to_lose': '11.25'}
+  - rl_model_25-08-16_19-53_iteration_180: {'wins': 260, 'losses': 4740, 'avg_moves_to_win': '24.74', 'avg_moves_to_lose': '11.99'}
+  - rl_model_25-08-16_19-58_iteration_210: {'wins': 294, 'losses': 4706, 'avg_moves_to_win': '25.55', 'avg_moves_to_lose': '12.18'}
+  - rl_model_25-08-16_20-02_iteration_240: {'wins': 396, 'losses': 4604, 'avg_moves_to_win': '25.92', 'avg_moves_to_lose': '12.68'}
+  - rl_model_25-08-16_20-06_iteration_270: {'wins': 496, 'losses': 4504, 'avg_moves_to_win': '26.27', 'avg_moves_to_lose': '12.84'}
+  - rl_model_25-08-16_20-11_iteration_300: {'wins': 546, 'losses': 4454, 'avg_moves_to_win': '26.85', 'avg_moves_to_lose': '13.18'}
+  - rl_model_25-08-16_20-16_iteration_330: {'wins': 563, 'losses': 4437, 'avg_moves_to_win': '26.49', 'avg_moves_to_lose': '13.51'}
+  - rl_model_25-08-16_20-21_iteration_360: {'wins': 641, 'losses': 4359, 'avg_moves_to_win': '26.83', 'avg_moves_to_lose': '13.44'}
+  - rl_model_25-08-16_20-26_iteration_390: {'wins': 691, 'losses': 4309, 'avg_moves_to_win': '26.63', 'avg_moves_to_lose': '13.89'}
+  - rl_model_25-08-16_20-30_iteration_420: {'wins': 772, 'losses': 4228, 'avg_moves_to_win': '26.88', 'avg_moves_to_lose': '13.80'}
+  - rl_model_25-08-16_20-35_iteration_450: {'wins': 801, 'losses': 4199, 'avg_moves_to_win': '26.71', 'avg_moves_to_lose': '13.96'}
+  - rl_model_25-08-16_20-40_iteration_480: {'wins': 877, 'losses': 4123, 'avg_moves_to_win': '26.90', 'avg_moves_to_lose': '13.80'}
+  - rl_model_25-08-16_20-45_iteration_510: {'wins': 878, 'losses': 4122, 'avg_moves_to_win': '27.12', 'avg_moves_to_lose': '13.80'}
+  - rl_model_25-08-16_20-50_iteration_540: {'wins': 909, 'losses': 4091, 'avg_moves_to_win': '26.82', 'avg_moves_to_lose': '13.98'}
+  - rl_model_25-08-16_20-55_iteration_570: {'wins': 955, 'losses': 4045, 'avg_moves_to_win': '26.85', 'avg_moves_to_lose': '13.86'}
+  - rl_model_25-08-16_20-59_iteration_600: {'wins': 966, 'losses': 4034, 'avg_moves_to_win': '26.81', 'avg_moves_to_lose': '14.11'}
+  - ...
+  - rl_model_25-08-16_21-42_iteration_870: {'wins': 1061, 'losses': 3939, 'avg_moves_to_win': '26.90', 'avg_moves_to_lose': '14.24'}
+  - rl_model_25-08-16_21-47_iteration_900: {'wins': 1077, 'losses': 3923, 'avg_moves_to_win': '26.67', 'avg_moves_to_lose': '14.39'}
+
+  * This seems to have plateaued a bit. I'll commit this, and then try a larger network with ReLu.

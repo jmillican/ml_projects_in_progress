@@ -21,10 +21,10 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
     model = Sequential(
         [
             tf.keras.Input(shape=input_shape, name='input_layer'),  # type: ignore
-            Conv2D(10, (3, 3), activation='relu', padding='same', name='conv1'),
-            Conv2D(10, (3, 3), activation='relu', padding='same', name='conv2'),
-            Conv2D(4, (3, 3), activation='relu', padding='same', name='conv3'),
-            Conv2D(2, (1, 1), activation='relu', padding='same', name='output_layer'),
+            Conv2D(16, (3, 3), activation='relu', padding='same', name='conv1'),
+            Conv2D(16, (3, 3), activation='relu', padding='same', name='conv2'),
+            Conv2D(10, (3, 3), activation='relu', padding='same', name='conv3'),
+            Conv2D(2, (1, 1), activation='linear', padding='same', name='output_layer'),
         ]
     )
     # Use modern Adam optimizer with learning rate schedule

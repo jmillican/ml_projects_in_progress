@@ -44,8 +44,8 @@ def save_rl_training_data(boards, target_vectors, filename_prefix='rl_training_d
 #     reward_vectors = data['reward_vectors']
 #     return boards, reward_vectors
 
-NUM_IN_RUN = 10000
-BATCH_SIZE = 1000
+NUM_IN_RUN = 4500
+BATCH_SIZE = 750
 TARGET_SAMPLES_PER_ITERATION = 20000
 
 def main():
@@ -85,16 +85,13 @@ def main():
             ]
             profile_end("RL Game: Create Games")
 
-            profile_start("RL Game: Produce Iniitial Predictions")
             predictions = produce_model_predictions_batch(games, model)
-            profile_end("RL Game: Produce Initial Predictions")
 
             move = 0
             while games:
                 move += 1
                 rewards = [0.0] * len(games)
                 start_input_boards = []
-                visible_boards = []
                 rows = [0] * len(games)
                 cols = [0] * len(games)
                 states = [CellState.HIDDEN] * len(games)
@@ -111,11 +108,13 @@ def main():
                     cols[i] = col
                     states[i] = state
 
+                    profile_start("RL Game: Make Move")
                     if state == CellState.REVEALED:
                         game.reveal(row, col)
                     else:
                         game.flag(row, col)
-                    
+                    profile_end("RL Game: Make Move")
+
                     if game.get_game_state() == GameState.LOST:
                         rewards[i] = -10.0
                     elif game.get_game_state() == GameState.WON:
@@ -129,8 +128,6 @@ def main():
                             rewards[i] = 1.0
                         else:
                             raise Exception(f"Invalid state: {state}")
-
-                    visible_boards.append(game.get_visible_board())
 
                 predictions = produce_model_predictions_batch(games, model)
 
@@ -167,7 +164,6 @@ def main():
             profile_end("RL Game")
 
             if len(boards) >= TARGET_SAMPLES_PER_ITERATION:
-                print(f"Reached target samples per iteration, after {batch_num + 1} batches of {BATCH_SIZE} games each.")
                 break
 
         print(f"Collected {len(boards)} training examples.")
