@@ -45,7 +45,7 @@ def save_rl_training_data(boards, target_vectors, filename_prefix='rl_training_d
 #     return boards, reward_vectors
 
 NUM_IN_RUN = 10000
-BATCH_SIZE = 500
+BATCH_SIZE = 1000
 TARGET_SAMPLES_PER_ITERATION = 20000
 
 def main():
@@ -78,14 +78,16 @@ def main():
         for batch_num in tqdm(range(iterations)):
             profile_start("RL Game")
 
-            profile_start("Create Games")
+            profile_start("RL Game: Create Games")
             games = [
                 Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=rng.randint(2**32 - 1))
                 for _ in range(BATCH_SIZE)
             ]
-            profile_end("Create Games")
+            profile_end("RL Game: Create Games")
 
+            profile_start("RL Game: Produce Iniitial Predictions")
             predictions = produce_model_predictions_batch(games, model)
+            profile_end("RL Game: Produce Initial Predictions")
 
             move = 0
             while games:
@@ -163,6 +165,7 @@ def main():
                     target_vectors.append(target_vector)
                 games = [game for game in games if game.get_game_state() == GameState.PLAYING]
             profile_end("RL Game")
+
             if len(boards) >= TARGET_SAMPLES_PER_ITERATION:
                 print(f"Reached target samples per iteration, after {batch_num + 1} batches of {BATCH_SIZE} games each.")
                 break

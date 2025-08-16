@@ -176,3 +176,13 @@ Initial thoughts:
 * I've improved a few inefficiencies by finding vectorised way of doing stuff that had previously been in Python loops; and keeping a running track of the remaining valid moves, instead of having to recalculate them every time. Doesn't really help the main issue, but hopefully will help to accelerate future training runs (although the time is dominated by inference and training at this point).
 
 * I'm going to give it another go now, but also increase the batch size, and make the model itself smaller. I'll commit first and then make those tweaks.
+  - rl_model_25-08-16_18-35_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '1.78'}
+  - rl_model_25-08-16_18-39_iteration_30: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '14.50', 'avg_moves_to_lose': '5.73'}
+  - rl_model_25-08-16_18-43_iteration_60: {'wins': 7, 'losses': 4993, 'avg_moves_to_win': '19.43', 'avg_moves_to_lose': '6.25'}
+  - rl_model_25-08-16_18-47_iteration_90: {'wins': 15, 'losses': 4985, 'avg_moves_to_win': '23.60', 'avg_moves_to_lose': '6.47'}
+  - rl_model_25-08-16_18-51_iteration_120: {'wins': 19, 'losses': 4981, 'avg_moves_to_win': '23.53', 'avg_moves_to_lose': '7.03'}
+  - rl_model_25-08-16_18-55_iteration_150: {'wins': 22, 'losses': 4978, 'avg_moves_to_win': '23.09', 'avg_moves_to_lose': '7.07'}
+  - rl_model_25-08-16_18-59_iteration_180: {'wins': 26, 'losses': 4974, 'avg_moves_to_win': '24.04', 'avg_moves_to_lose': '7.24'}
+  - rl_model_25-08-16_19-03_iteration_210: {'wins': 24, 'losses': 4976, 'avg_moves_to_win': '24.42', 'avg_moves_to_lose': '7.28'}
+
+* OK I think this model is too small. I wanted to shrink it - and I did - but way too much. I'll try one that's still a bit smaller than the previous ones, but bigger than this. Especially 4 neurons in the penultimate layer feels meagre.
