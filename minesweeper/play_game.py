@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from .minesweeper import GameState, Minesweeper, CellState, BOARD_SIZE
-from .model import load_latest_model
+from .model import load_latest_model, load_model
 from .print_board import print_board
 import tensorflow as tf
 from tensorflow.keras import Model as TfKerasModel # type: ignore
@@ -117,11 +117,9 @@ def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tu
 
     LINE_UP = '\033[1A'
     LINE_CLEAR = '\x1b[2K'
-    print(f" - Turn {turn}, Games left: {num_running_games}")
 
     while num_running_games > 0:
         turn += 1
-        print(LINE_UP, end=LINE_CLEAR)
         print(f" - Turn {turn}, Games left: {num_running_games}")
         predictions = produce_model_predictions_batch(games, model)
 
@@ -136,6 +134,8 @@ def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tu
 
                 if game.get_game_state() != GameState.PLAYING:
                     num_running_games -= 1
+        print(LINE_UP, end=LINE_CLEAR)
+    print(f" - Turn {turn}, Games left: {num_running_games}")
 
     return [(game.num_moves, game.get_game_state()) for game in games]
 
@@ -143,13 +143,14 @@ def main():
     r = np.random.RandomState(2 ** 31 - 1)
 
     # Load the latest model chronologically from the models directory
-    model1 = load_latest_model()
+    model1, model1_name = load_latest_model()
     # Load the second-latest model chronologically from the models directory
-    model2 = load_latest_model(offset=1)
+    # model2 = load_latest_model(offset=1)
+    # model2 = load_model("rl_conv_model_iteration_12")
 
-    model1_prevails = 0
-    model2_prevails = 0
-    draw = 0
+    # model1_prevails = 0
+    # model2_prevails = 0
+    # draw = 0
     results = {
         'model1': {'wins': 0, 'losses': 0},
         'model2': {'wins': 0, 'losses': 0},
@@ -159,38 +160,39 @@ def main():
     print(f"Playing 5000 games with model 1 and model 2...")
     print("Playing model 1...")
     model1_results = play_games_with_model(game_seeds, model1)
-    print("Playing model 2...")
-    model2_results = play_games_with_model(game_seeds, model2)
+    # print("Playing model 2...")
+    # model2_results = play_games_with_model(game_seeds, model2)
 
     for i in range(len(game_seeds)):
         model1_result = model1_results[i]
-        model2_result = model2_results[i]
+        # model2_result = model2_results[i]
 
-        model1_prevailed = (model1_result[1] == GameState.WON and model2_result[1] == GameState.LOST) or \
-                    (model1_result[1] == GameState.WON and model2_result[1] == GameState.WON and model1_result[0] < model2_result[0]) or \
-                    (model1_result[1] == GameState.LOST and model2_result[1] == GameState.LOST and model1_result[0] > model2_result[0])
-        model2_prevailed = (model2_result[1] == GameState.WON and model1_result[1] == GameState.LOST) or \
-                (model2_result[1] == GameState.WON and model1_result[1] == GameState.WON and model2_result[0] < model1_result[0]) or \
-                (model2_result[1] == GameState.LOST and model1_result[1] == GameState.LOST and model2_result[0] > model1_result[0])
+        # model1_prevailed = (model1_result[1] == GameState.WON and model2_result[1] == GameState.LOST) or \
+        #             (model1_result[1] == GameState.WON and model2_result[1] == GameState.WON and model1_result[0] < model2_result[0]) or \
+        #             (model1_result[1] == GameState.LOST and model2_result[1] == GameState.LOST and model1_result[0] > model2_result[0])
+        # model2_prevailed = (model2_result[1] == GameState.WON and model1_result[1] == GameState.LOST) or \
+        #         (model2_result[1] == GameState.WON and model1_result[1] == GameState.WON and model2_result[0] < model1_result[0]) or \
+        #         (model2_result[1] == GameState.LOST and model1_result[1] == GameState.LOST and model2_result[0] > model1_result[0])
         
         if model1_result[1] == GameState.WON:
             results['model1']['wins'] += 1
         else:
             results['model1']['losses'] += 1
-        if model2_result[1] == GameState.WON:
-            results['model2']['wins'] += 1
-        else:
-            results['model2']['losses'] += 1
+        # if model2_result[1] == GameState.WON:
+        #     results['model2']['wins'] += 1
+        # else:
+        #     results['model2']['losses'] += 1
 
-        if model1_prevailed:
-            model1_prevails += 1
-        elif model2_prevailed:
-            model2_prevails += 1
-        else:
-            draw += 1
+        # if model1_prevailed:
+        #     model1_prevails += 1
+        # elif model2_prevailed:
+        #     model2_prevails += 1
+        # else:
+        #     draw += 1
 
-    print(f"Model 1 is better: {model1_prevails}, Model 2 better: {model2_prevails}, Draws: {draw}")
-    print(results)
+    # print(f"Model 1 is better: {model1_prevails}, Model 2 better: {model2_prevails}, Draws: {draw}")
+    # print(results)
+    print(f"{model1_name}: {results['model1']}")
 
 if __name__ == "__main__":
     main()

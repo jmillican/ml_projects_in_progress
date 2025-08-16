@@ -1,13 +1,14 @@
 from .play_game import decide_next_move_from_prediction, decide_next_move_with_rng, produce_model_predictions_batch
-from .model import load_latest_model, save_model
+from .model import load_latest_model, save_model, create_model
 from .minesweeper import Minesweeper, GameState, CellState, BOARD_SIZE
 from tqdm import tqdm
 import numpy as np
 import os
 import tensorflow as tf
 from tensorflow.keras import Model as TfKerasModel  # type: ignore
-import tf.keras # type: ignore
+import tensorflow.keras # type: ignore
 from .profile import profile_start, profile_end, get_profile, print_profiles
+from datetime import datetime
 
 discount_factor = 0.9  # Discount factor for future rewards
 RANDOM_PROBABILITY = 0.05  # Probability of making a random move instead of the model's prediction
@@ -43,23 +44,35 @@ def load_rl_training_data(filename_prefix='rl_training_data', iteration=0) -> tu
     reward_vectors = data['reward_vectors']
     return boards, reward_vectors
 
-NUM_IN_RUN = 100
+NUM_IN_RUN = 1000
 BATCH_SIZE = 100
 
 def main():
-    model = load_latest_model(verbose=True)
+    # model = load_latest_model(verbose=True)
+    
+    model = create_model(
+        input_shape=(9, 9, 1,),
+        output_shape=(9*9*2,))
+
     rng = np.random.RandomState(123456)  # Fixed seed for reproducibility
 
     boards = []
     reward_vectors = []
 
+    if NUM_IN_RUN % BATCH_SIZE != 0:
+        raise ValueError("NUM_IN_RUN must be divisible by BATCH_SIZE for this setup.")
+    iterations = NUM_IN_RUN // BATCH_SIZE
+    
     for rl_run in range(10000):
-        print(f"Running RL iteration {rl_run}...")
+        # Save the model after every 30 iterations
+        if rl_run % 30 == 0:
+            print(f"Saving model after iteration {rl_run}...")
 
-        if NUM_IN_RUN % BATCH_SIZE != 0:
-            raise ValueError("NUM_IN_RUN must be divisible by BATCH_SIZE for this setup.")
-        iterations = NUM_IN_RUN // BATCH_SIZE
+            model_name = "rl_model_{}_iteration_{}".format(datetime.now().strftime('%y-%m-%d_%H-%M'), rl_run)
 
+            save_model(model, model_name)
+
+        print(f"Running RL iteration {rl_run + 1}...")
         for _ in tqdm(range(iterations)):
             profile_start("RL Game")
 
@@ -142,14 +155,13 @@ def main():
                 games = [game for game in games if game.get_game_state() == GameState.PLAYING]
             profile_end("RL Game")
 
-        print_profiles()
         print(f"Collected {len(boards)} training examples.")
 
-        save_rl_training_data(boards, reward_vectors, filename_prefix='rl_training_data', iteration=rl_run)
+        # save_rl_training_data(boards, reward_vectors, filename_prefix='rl_training_data', iteration=rl_run)
         # boards, reward_vectors = load_rl_training_data(filename_prefix='rl_training_data', iteration=rl_run)
 
         # Update learning rate for RL (lower than pre-training)
-        tf.keras.backend.set_value(
+        tensorflow.keras.backend.set_value(
             model.optimizer.learning_rate,
             0.000001  # 1e-6, adjust as needed
         )
@@ -157,13 +169,8 @@ def main():
         model.fit(
             np.array(boards).reshape(-1, 9, 9, 1),
             np.array(reward_vectors).reshape(-1, 9, 9, 2),
-            epochs=5,
+            epochs=1,
             verbose=1)
-        
-        # Save the model after every 10 iterations
-        if rl_run % 10 == 0:
-            print(f"Saving model after iteration {rl_run + 1}...")
-            save_model(model, f"rl_conv_model_iteration_{rl_run + 1}")
 
 if __name__ == "__main__":
     main()

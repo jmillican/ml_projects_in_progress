@@ -56,7 +56,7 @@ def load_model(model_name: str) -> TfKerasModel:
         raise FileNotFoundError(f"Model {model_name} does not exist at {model_path}.")
     return tf.keras.models.load_model(model_path, custom_objects={'loss_function': loss_function})   # type: ignore
 
-def load_latest_model(offset: int = 0, verbose: bool = True) -> TfKerasModel:
+def load_latest_model(offset: int = 0, verbose: bool = True) -> tuple[TfKerasModel, str]:
     # List all model files in the models directory
     model_files = [f for f in os.listdir(models_dir) if f.endswith('.h5')]
     if not model_files:
@@ -70,4 +70,4 @@ def load_latest_model(offset: int = 0, verbose: bool = True) -> TfKerasModel:
         print(f"Loading model: {model_name}")
     # Load the model
     model = load_model(model_name)
-    return model
+    return model, model_name

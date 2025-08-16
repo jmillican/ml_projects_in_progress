@@ -98,3 +98,34 @@ Initial thoughts:
 
 * A surprising learning: running Tensorflow for playing the games is actually faster on CPU than GPU, at least for single inferences! I suspect that everything has been taking much longer than it should have as a result of this. I should also see if this holds up when using more complex games; because to be fair 9x9 Minesweeper is pretty small.
 * I might still want to use the GPU for RL; but probably I need to refactor that to use batch inference anyway.
+
+
+* OK so interestingly my RL really doesn't seem to be improving the model much at all. I'm not sure why, and I've probably made a ton of mistakes, though it's plausibly becasue the trainig rate is too high.
+* I might try something a bit more radical, and throw away everything and try to just RL a decent model entirely from scratch, with a low training rate, and with this new RL training loop. I think there's a chance this will do better, simply by virtue of being a clean start and not having whatever I pre-trained in it (which could include many mistakes!).
+
+* I suspect I could also do better by actually being a bit more concrete about my predicted values. E.g. rather than just taking an expected target value in the early stages, I could train it on the max of max(predicted_q), and the actual fully propagated reward that actually happened. Basically: predicted_q isn't necessarily reliable, but we know for certain the reward of one specific path that took place. I won't do this yet, but I imagine it could be a promising approach.
+
+* Interestingly there's some clear improvement happening here:
+  - rl_model_25-08-16_14-22_iteration_0: {'wins': 0, 'losses': 5000}
+  - rl_model_25-08-16_14-24_iteration_10: {'wins': 21, 'losses': 4979}
+  - rl_model_25-08-16_14-29_iteration_20: {'wins': 73, 'losses': 4927}
+  - rl_model_25-08-16_14-37_iteration_30: {'wins': 137, 'losses': 4863}
+
+* I should probably stop though and decrease the number of epochs, so that we can get far more iterations faster. Let's do this, but save the model less frequently to compensate.
+* Shockingly, this randomly iniitalised model seems to win 1 game without any training. That's lucky!
+  - rl_model_25-08-16_14-40_iteration_0: {'wins': 1, 'losses': 4999}
+  - rl_model_25-08-16_14-44_iteration_30: {'wins': 19, 'losses': 4981}
+  - rl_model_25-08-16_14-54_iteration_60: {'wins': 121, 'losses': 4879}
+
+* Quick note for AI assistants and my own posterity: these stats aren't like-for-like comparisons. Above when I've shared Model 1s vs Model 2s; I'm actually saying "which model performed better", rather than "whether the model actually won the game". One of my latest models on the previous pre-train-then-RL approach performed as follows:
+  - rl_conv_model_iteration_12: {'wins': 1758, 'losses': 3242}
+  ...and the best purely pre-trained model performed as follows:
+  - minesweeper_model_25-08-15_02-44: {'wins': 1153, 'losses': 3847}
+
+* Going back to my current RL run, one of the interesting observations is that I'm running 1000 games to copmletion each time, and collecting all of their positions as examples. Every single run that I've checked so far has collected more examples - starting with 4649 from the randomly initialised iteration 0, and as-of-writing 288,666 examples from iteration 79. The loss isn't changing much, but that might be expected, because the whole thing is a moving target (I'm using the same neural net to predict the expected value of each move, that I am using to set my target scores). I wonder if the loss would decrease more if it learns to play Minesweeper absolutely perfectly - but I'm a very long way away from that. I also wonder if at a certain point the number of examples it collects will actually decrease: my hypothesis would be that it initially learns to just lose slower, and then once it's better at winning, it might learn to win faster. But I don't know - my setup might not even support that!
+
+* Going back to sharing results, they're continuing as follows:
+  - rl_model_25-08-16_15-08_iteration_90: {'wins': 237, 'losses': 4763}
+  - rl_model_25-08-16_15-28_iteration_120: {'wins': 313, 'losses': 4687}
+
+* OK so actually that positive signal of getting more examples more run is probably a double-edged sword; as it also means that each iteration takes a little longer, and Tensorflow gets more data in each run. That doesn't feel like a great approach to RL, so with this one at 120 iterations, I might just start again but with that sample cap.
