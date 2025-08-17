@@ -11,8 +11,8 @@ from .profile import profile_start, profile_end, get_profile, print_profiles
 from datetime import datetime
 from .print_board import print_board
 
-discount_factor = 0.9  # Discount factor for future rewards
-RANDOM_PROBABILITY = 0.02  # Probability of making a random move instead of the model's prediction
+discount_factor = 0.95  # Discount factor for future rewards
+RANDOM_PROBABILITY = 0.03  # Probability of making a random move instead of the model's prediction
 
 def save_rl_training_data(boards, target_vectors, filename_prefix='rl_training_data', iteration=0):
     training_data_dir = os.path.join(os.path.dirname(__file__), 'rl_training_data')
@@ -67,7 +67,7 @@ def main():
         reward_vectors = []
         target_vectors = []
         # Save the model after every 30 iterations
-        if rl_run % 30 == 0:
+        if (rl_run < 600 and rl_run % 30 == 0) or (rl_run >= 600 and rl_run % 100 == 0):
             print(f"Saving model after iteration {rl_run}...")
 
             model_name = "rl_model_{}_iteration_{}".format(datetime.now().strftime('%y-%m-%d_%H-%M'), rl_run)
@@ -152,7 +152,7 @@ def main():
                         target += max_next_q * discount_factor
                         profile_end("Calculate Next Q")
 
-                        
+
                     boards.append(start_input_boards[i])
                     target_vector = np.zeros((BOARD_SIZE, BOARD_SIZE, 2), dtype=np.float32)
                     if states[i] == CellState.REVEALED:

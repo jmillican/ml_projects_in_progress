@@ -322,4 +322,22 @@ Initial thoughts:
   - ...
   - rl_model_25-08-17_10-40_iteration_3510: {'wins': 2280, 'losses': 2720, 'avg_moves_to_win': '27.89', 'avg_moves_to_lose': '14.06'}
 
+## 17-08-2025
+
 * OK so this has definitely plataued now. It's promising progress, but clearly not improving any more. I'll commit this and then try a larger architecture with a little more exploration.
+
+* Larger convolutional layers, and then one final dense output layer at the end. Slightly more exploration; and discounting future benefits less.
+  - rl_model_25-08-17_10-58_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '2.40'}
+  - rl_model_25-08-17_11-02_iteration_30: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '6.00', 'avg_moves_to_lose': '5.41'}
+  - rl_model_25-08-17_11-07_iteration_60: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '8.00', 'avg_moves_to_lose': '5.66'}
+  - rl_model_25-08-17_11-11_iteration_90: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '10.50', 'avg_moves_to_lose': '5.56'}
+  - rl_model_25-08-17_11-15_iteration_120: {'wins': 6, 'losses': 4994, 'avg_moves_to_win': '11.00', 'avg_moves_to_lose': '5.72'}
+  - rl_model_25-08-17_11-19_iteration_150: {'wins': 6, 'losses': 4994, 'avg_moves_to_win': '13.17', 'avg_moves_to_lose': '6.41'}
+  - rl_model_25-08-17_11-22_iteration_180: {'wins': 5, 'losses': 4995, 'avg_moves_to_win': '10.80', 'avg_moves_to_lose': '6.78'}
+  - rl_model_25-08-17_11-26_iteration_210: {'wins': 8, 'losses': 4992, 'avg_moves_to_win': '18.50', 'avg_moves_to_lose': '6.94'}
+  - ...
+  - rl_model_25-08-17_11-41_iteration_330: {'wins': 25, 'losses': 4975, 'avg_moves_to_win': '17.28', 'avg_moves_to_lose': '8.14'}
+  - ...
+  - rl_model_25-08-17_11-59_iteration_480: {'wins': 50, 'losses': 4950, 'avg_moves_to_win': '18.32', 'avg_moves_to_lose': '8.75'}
+
+* So this was progressing reasonably. Much slower than others, but it has far more parameters and was still learning. I wonder if I should actually reduce the size of the convolutional layers though - especially the last one, as this will help to reduce the massive increase in parameters we get between this and the dense layer.
