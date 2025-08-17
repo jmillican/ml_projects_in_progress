@@ -52,8 +52,8 @@ def main():
     # model = load_latest_model(verbose=True)
     
     model = create_model(
-        input_shape=(9, 9, 3,),
-        output_shape=(9*9*2,))
+        input_shape=(9, 9, 5,),
+        output_shape=(9, 9, 2, ))
 
     rng = np.random.RandomState(123456)  # Fixed seed for reproducibility
 
@@ -181,7 +181,7 @@ def main():
         
         profile_start("Model Fit")
         model.fit(
-            np.array(boards).reshape(-1, 9, 9, 3),
+            np.array(boards).reshape(-1, 9, 9, 5),
             np.array(target_vectors).reshape(-1, 9, 9, 2),
             epochs=1,
             verbose=1)

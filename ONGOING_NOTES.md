@@ -371,3 +371,24 @@ Initial thoughts:
   - rl_model_25-08-17_18-29_iteration_400: {'wins': 31, 'losses': 4969, 'avg_moves_to_win': '20.39', 'avg_moves_to_lose': '8.56'}
 
 * OK this seems to be progressing, but very slowly. I wonder if I should get global state instead by essentially just adding it to every single parameter in additional channels in the input later. Claude suggested this earlier when I asked about providing global state to them (I think calling it Broadcasting or something?) - and I initially dismissed it, because it's duplicative and feels wasteful; but I guess it probably wouldn't actually add more parameters, and the cost of duplication in the input layer seems minimal.
+* This model is 27068 parameters - so a fair bit bigger than some of my earlier successes were looking; but far smaller than these large ones that were seeming to take ages.
+
+  - rl_model_25-08-17_18-42_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '7.35'}
+  - rl_model_25-08-17_18-46_iteration_60: {'wins': 3, 'losses': 4997, 'avg_moves_to_win': '15.00', 'avg_moves_to_lose': '8.47'}
+  - rl_model_25-08-17_18-50_iteration_90: {'wins': 3, 'losses': 4997, 'avg_moves_to_win': '17.33', 'avg_moves_to_lose': '8.67'}
+  - rl_model_25-08-17_18-54_iteration_120: {'wins': 6, 'losses': 4994, 'avg_moves_to_win': '16.67', 'avg_moves_to_lose': '9.08'}
+  - rl_model_25-08-17_18-58_iteration_150: {'wins': 13, 'losses': 4987, 'avg_moves_to_win': '19.31', 'avg_moves_to_lose': '9.58'}
+  - rl_model_25-08-17_19-02_iteration_180: {'wins': 29, 'losses': 4971, 'avg_moves_to_win': '18.83', 'avg_moves_to_lose': '9.98'}
+  - rl_model_25-08-17_19-06_iteration_210: {'wins': 63, 'losses': 4937, 'avg_moves_to_win': '20.52', 'avg_moves_to_lose': '9.77'}
+  - ...
+  - rl_model_25-08-17_19-33_iteration_400: {'wins': 190, 'losses': 4810, 'avg_moves_to_win': '24.06', 'avg_moves_to_lose': '11.51'}
+  - rl_model_25-08-17_19-40_iteration_450: {'wins': 239, 'losses': 4761, 'avg_moves_to_win': '24.77', 'avg_moves_to_lose': '12.28'}
+  - rl_model_25-08-17_19-47_iteration_500: {'wins': 296, 'losses': 4704, 'avg_moves_to_win': '24.65', 'avg_moves_to_lose': '12.41'}
+  - rl_model_25-08-17_19-55_iteration_550: {'wins': 368, 'losses': 4632, 'avg_moves_to_win': '25.27', 'avg_moves_to_lose': '12.83'}
+  - rl_model_25-08-17_20-02_iteration_600: {'wins': 446, 'losses': 4554, 'avg_moves_to_win': '25.72', 'avg_moves_to_lose': '12.93'}
+  - rl_model_25-08-17_20-24_iteration_750: {'wins': 581, 'losses': 4419, 'avg_moves_to_win': '26.17', 'avg_moves_to_lose': '13.29'}
+  - rl_model_25-08-17_20-47_iteration_900: {'wins': 637, 'losses': 4363, 'avg_moves_to_win': '26.31', 'avg_moves_to_lose': '13.41'}
+
+* I just realising that I'm doing nothing to normalise the global input state; that can't help at all. I might just do something simple like dividing mines_remaining by 10, and cells_revealed by 81. This will put them into the 0-1 range, instead of truly normalising them, but I suspect would still be worthwhile; and my assumption is already that they're secondary in importance to the rest of the board.
+
+  - rl_model_25-08-17_21-10_iteration_1050: {'wins': 717, 'losses': 4283, 'avg_moves_to_win': '26.68', 'avg_moves_to_lose': '13.52'}

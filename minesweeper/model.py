@@ -11,11 +11,8 @@ def loss_function(y_true, y_pred):
     """
     Custom loss function that masks the loss for cells that are not visible.
     """
-
-    y_pred_reshaped = tf.reshape(y_pred, (-1, 9, 9, 2))  # Reshape to (batch_size * rows * cols, 2)
-
     mask = tf.cast(tf.not_equal(y_true, 0), tf.float32)  # Mask where y_true is not zero
-    masked_loss = tf.reduce_mean(tf.square(y_true - y_pred_reshaped) * mask)
+    masked_loss = tf.reduce_mean(tf.square(y_true - y_pred) * mask)
     return masked_loss
 
 def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) -> TfKerasModel:
@@ -26,11 +23,8 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
             tf.keras.Input(shape=input_shape, name='input_layer'),  # type: ignore
             Conv2D(60, (5, 5), activation='gelu', padding='same', name='conv1'),
             Conv2D(30, (3, 3), activation='gelu', padding='same', name='conv2'),
-            Conv2D(15, (3, 3), activation='gelu', padding='same', name='conv3'),
-            Conv2D(8, (3, 3), activation='gelu', padding='same', name='conv4'),
-            Flatten(name='flatten'),
-            Dense(162, activation='linear', name='output_layer'),
-            # Conv2D(2, (1, 1), activation='linear', padding='same', name='output_layer'),
+            Conv2D(12, (3, 3), activation='gelu', padding='same', name='conv3'),
+            Conv2D(2, (1, 1), activation='linear', padding='same', name='output_layer'),
         ]
     )
     # Use modern Adam optimizer with learning rate schedule

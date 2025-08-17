@@ -222,25 +222,33 @@ class Minesweeper:
         Get the input board for the model.
         
         Returns:
-            3D array. Treated as a 2D board with each row, column cell represented as:
-            - [0, 0, 0]: hidden cell.
-            - [1, 0-8, 0]: revealed cell with number of adjacent mines.
-            - [0, 0, 1]: flagged cell.
-            - [0, 0, 2]: revealed mine - although this should never actually happen in the model.
+            3D array. Treated as a 2D board with the first three parameters of each row, column cell represented as:
+            - [0, 0, 0, ]: hidden cell.
+            - [1, 0-8, 0, ]: revealed cell with number of adjacent mines.
+            - [0, 0, 1, ]: flagged cell.
+            - [0, 0, 2, ]: revealed mine - although this should never actually happen in the model.
+
+            The remaining two parameters of each cell represent the global state of the game, with the first
+            representing the number of remaining mines, and the second representing the number of un-revealed cells.
         """
-        input_board = np.full((self.rows, self.cols, 3), 0, dtype=np.float16)
+        input_board = np.full((self.rows, self.cols, 5), 0, dtype=np.float16)
 
         for row in range(self.rows):
             for col in range(self.cols):
                 if self.cell_states[row, col] == CellState.HIDDEN.value:
-                    input_board[row, col] = [0, 0, 0]
+                    input_board[row, col] = [0, 0, 0, 0, 0]
                 elif self.cell_states[row, col] == CellState.REVEALED.value:
                     if self.mine_board[row, col]:
-                        input_board[row, col] = [0, 0, 2]
+                        input_board[row, col] = [0, 0, 2, 0, 0]
                     else:
-                        input_board[row, col] = [1, self.adjacent_mines[row, col] / 1.5, 0]
+                        input_board[row, col] = [1, self.adjacent_mines[row, col] / 1.5, 0, 0, 0]
                 elif self.cell_states[row, col] == CellState.FLAGGED.value:
-                    input_board[row, col] = [0, 0, 1]
+                    input_board[row, col] = [0, 0, 1, 0, 0]
+
+        remaining_mines = self.get_remaining_mines()
+        remaining_cells = np.sum(self.cell_states == CellState.HIDDEN.value)
+        input_board[:, :, 3] = remaining_mines
+        input_board[:, :, 4] = remaining_cells
 
         return input_board
         

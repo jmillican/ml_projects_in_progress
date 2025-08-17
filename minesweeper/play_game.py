@@ -29,7 +29,7 @@ def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndar
 
 def produce_model_predictions_batch(games: list[Minesweeper], model: TfKerasModel) -> np.ndarray:
     profile_start("PredictBatch")
-    model_inputs = [game.get_input_board().reshape(1, BOARD_SIZE, BOARD_SIZE, 3) for game in games]
+    model_inputs = [game.get_input_board().reshape(1, BOARD_SIZE, BOARD_SIZE, 5) for game in games]
 
     actions = model.predict(np.vstack(model_inputs), verbose=0)
     reshaped = actions.reshape(len(games), BOARD_SIZE, BOARD_SIZE, 2)
