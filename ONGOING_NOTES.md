@@ -296,3 +296,30 @@ Initial thoughts:
   - rl_model_25-08-17_01-11_iteration_570: {'wins': 664, 'losses': 4336, 'avg_moves_to_win': '25.70', 'avg_moves_to_lose': '14.55'}
 
 * OK so this continued to progress, but it's learning quite a bit slower than other approaches I took. I'm going to commit it, then let's try a slightly smaller model.
+* Actually this model is larger, but fewer layers - and much more in the very first layer. Hopefully to identify a bunch more possible filters that it needs to consider.
+
+  - rl_model_25-08-17_01-17_iteration_0: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '10.00', 'avg_moves_to_lose': '4.24'}
+  - rl_model_25-08-17_01-20_iteration_30: {'wins': 12, 'losses': 4988, 'avg_moves_to_win': '19.92', 'avg_moves_to_lose': '8.54'}
+  - rl_model_25-08-17_01-24_iteration_60: {'wins': 230, 'losses': 4770, 'avg_moves_to_win': '25.28', 'avg_moves_to_lose': '11.03'}
+  - rl_model_25-08-17_01-28_iteration_90: {'wins': 297, 'losses': 4703, 'avg_moves_to_win': '26.01', 'avg_moves_to_lose': '12.63'}
+  - rl_model_25-08-17_01-32_iteration_120: {'wins': 545, 'losses': 4455, 'avg_moves_to_win': '27.40', 'avg_moves_to_lose': '13.15'}
+  - rl_model_25-08-17_01-37_iteration_150: {'wins': 832, 'losses': 4168, 'avg_moves_to_win': '27.90', 'avg_moves_to_lose': '13.68'}
+  - rl_model_25-08-17_01-42_iteration_180: {'wins': 887, 'losses': 4113, 'avg_moves_to_win': '27.92', 'avg_moves_to_lose': '13.85'}
+  - rl_model_25-08-17_01-47_iteration_210: {'wins': 1119, 'losses': 3881, 'avg_moves_to_win': '28.09', 'avg_moves_to_lose': '13.95'}
+  - rl_model_25-08-17_01-52_iteration_240: {'wins': 1085, 'losses': 3915, 'avg_moves_to_win': '27.75', 'avg_moves_to_lose': '14.32'}
+  - rl_model_25-08-17_01-57_iteration_270: {'wins': 1190, 'losses': 3810, 'avg_moves_to_win': '27.62', 'avg_moves_to_lose': '14.41'}
+  - ...
+  - rl_model_25-08-17_02-57_iteration_630: {'wins': 1971, 'losses': 3029, 'avg_moves_to_win': '27.68', 'avg_moves_to_lose': '14.20'}
+  - rl_model_25-08-17_03-02_iteration_660: {'wins': 2037, 'losses': 2963, 'avg_moves_to_win': '27.74', 'avg_moves_to_lose': '14.22'}
+  - ...
+  - rl_model_25-08-17_03-46_iteration_930: {'wins': 2145, 'losses': 2855, 'avg_moves_to_win': '27.94', 'avg_moves_to_lose': '14.12'}
+  - ...
+  - rl_model_25-08-17_04-20_iteration_1140: {'wins': 2246, 'losses': 2754, 'avg_moves_to_win': '28.09', 'avg_moves_to_lose': '14.02'}
+  - ...
+  - rl_model_25-08-17_09-14_iteration_2970: {'wins': 2288, 'losses': 2712, 'avg_moves_to_win': '28.01', 'avg_moves_to_lose': '13.78'}
+  - rl_model_25-08-17_09-19_iteration_3000: {'wins': 2286, 'losses': 2714, 'avg_moves_to_win': '27.97', 'avg_moves_to_lose': '14.09'}
+  - rl_model_25-08-17_09-23_iteration_3030: {'wins': 2289, 'losses': 2711, 'avg_moves_to_win': '28.03', 'avg_moves_to_lose': '13.80'}
+  - ...
+  - rl_model_25-08-17_10-40_iteration_3510: {'wins': 2280, 'losses': 2720, 'avg_moves_to_win': '27.89', 'avg_moves_to_lose': '14.06'}
+
+* OK so this has definitely plataued now. It's promising progress, but clearly not improving any more. I'll commit this and then try a larger architecture with a little more exploration.

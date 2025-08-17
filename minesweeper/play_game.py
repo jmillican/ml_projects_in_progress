@@ -146,9 +146,9 @@ def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tu
     return [(game.num_moves, game.get_game_state()) for game in games]
 
 def main():
-    offsets_to_load = 1
+    offsets_to_load = 20
 
-    for offset in range(0, offsets_to_load):
+    for offset in sorted(range(offsets_to_load), reverse=True):
         r = np.random.RandomState(2 ** 31 - 1)
         # Load the latest model chronologically from the models directory
         model, model_name = load_latest_model(offset=offset)
