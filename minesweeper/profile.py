@@ -30,5 +30,7 @@ def get_profile(label: str) -> float:
 
 def print_profiles():
     """Print all recorded profiles."""
-    for label, elapsed in PROFILES.items():
+    items = [x for x in PROFILES.items()]
+    items.sort(key=lambda x: x[1], reverse=True)
+    for label, elapsed in items:
         print(f"{label}: {elapsed:.6f} seconds, over {PROFILE_CALLS[label]} calls")

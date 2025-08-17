@@ -16,28 +16,21 @@ suppress_tensorflow_logging()
 models_dir = os.path.join(os.path.dirname(__file__), 'models')
 
 def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndarray:
-    profile_start("Predict")
-    profile_start("PredictGetVisible")
     input_board = game.get_input_board()
-    profile_end("PredictGetVisible")
 
     reshaped_input = input_board.reshape(1, BOARD_SIZE, BOARD_SIZE, 3)
     actions = model(reshaped_input, training=False).numpy()
     reshaped = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
-    profile_end("Predict")
     return reshaped
 
 def produce_model_predictions_batch(games: list[Minesweeper], model: TfKerasModel) -> np.ndarray:
-    profile_start("PredictBatch")
     model_inputs = [game.get_input_board().reshape(1, BOARD_SIZE, BOARD_SIZE, 5) for game in games]
 
     actions = model.predict(np.vstack(model_inputs), verbose=0)
     reshaped = actions.reshape(len(games), BOARD_SIZE, BOARD_SIZE, 2)
-    profile_end("PredictBatch")
     return reshaped
 
 def decide_next_move_from_prediction(game: Minesweeper, actions: np.ndarray) -> tuple[int, int, CellState]:
-    profile_start("DecideNextMoveFromPrediction")
 
     valid_moves_mask = game.valid_moves_mask
     masked_actions = actions * valid_moves_mask
@@ -52,7 +45,6 @@ def decide_next_move_from_prediction(game: Minesweeper, actions: np.ndarray) -> 
     mask_implementation_type = CellState.REVEALED if mask_implementation_type_index == 0 else CellState.FLAGGED
     result = (int(mask_implementation_row), int(mask_implementation_col), mask_implementation_type)
 
-    profile_end("DecideNextMoveFromPrediction")
     return result
 
 def decide_next_move_with_model(game: Minesweeper, model) -> tuple[int, int, CellState]:
@@ -80,7 +72,6 @@ def decide_next_move_with_rng(game: Minesweeper, rng: np.random.RandomState) -> 
     Returns:
         A tuple containing the row, column, and cell state (REVEALED or FLAGGED).
     """
-    profile_start("DecideNextMoveWithRNG")
     visible_board = game.get_visible_board()
     row = rng.randint(0, BOARD_SIZE)
     col = rng.randint(0, BOARD_SIZE)
@@ -100,7 +91,6 @@ def decide_next_move_with_rng(game: Minesweeper, rng: np.random.RandomState) -> 
     else:
         state = CellState.REVEALED if rng.rand() < mine_proportion else CellState.FLAGGED
 
-    profile_end("DecideNextMoveWithRNG")
     return row, col, state
 
 def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tuple[int, GameState]]:

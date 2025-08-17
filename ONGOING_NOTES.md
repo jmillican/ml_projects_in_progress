@@ -392,3 +392,7 @@ Initial thoughts:
 * I just realising that I'm doing nothing to normalise the global input state; that can't help at all. I might just do something simple like dividing mines_remaining by 10, and cells_revealed by 81. This will put them into the 0-1 range, instead of truly normalising them, but I suspect would still be worthwhile; and my assumption is already that they're secondary in importance to the rest of the board.
 
   - rl_model_25-08-17_21-10_iteration_1050: {'wins': 717, 'losses': 4283, 'avg_moves_to_win': '26.68', 'avg_moves_to_lose': '13.52'}
+
+* Let's give it another go, but normalising the inputs.
+* Actually, first let's do some profiling to see about making this whole thing a bit faster.
+* OK so I think I've addressed a few of the efficiency concerns.
