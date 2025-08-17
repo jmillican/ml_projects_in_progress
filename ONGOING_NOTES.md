@@ -266,3 +266,33 @@ Initial thoughts:
   - rl_model_25-08-16_23-49_iteration_120: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '12.50', 'avg_moves_to_lose': '6.42'}
 
 * Yeah this isn't working. Also I realised that, despite the massive increase in parameters, I actually have fewer neurons in the two penultimate layers than in the output layer. Which seems counterintuitive, and like they'd have to learn some strange tricks for it to actually work.
+
+* Let's try another architecture back to pure convolutional layers, but with larger masks, more filters, and another layer. This has 21538 parameters - so a fair few more than before - but far fewer than when I had dense layers.
+  - rl_model_25-08-16_23-54_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '1.34'}
+
+* There's an interesting pattern where it seems to be alternately getting around 20k and then around 4k training examples from each iteration. I suspect this means we're in some sort of pathological situation, perhaps where each iteration has it learning the opposite lessons. I'll let it play out for a bit, but I'm not sure if it's promising.
+
+  - rl_model_25-08-16_23-57_iteration_30: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '6.00', 'avg_moves_to_lose': '5.95'}
+  - rl_model_25-08-17_00-02_iteration_60: {'wins': 12, 'losses': 4988, 'avg_moves_to_win': '18.58', 'avg_moves_to_lose': '7.53'}
+
+* OK that siutation seems to have resolved itself, and it seems to slowly be learning roughly how to win and lose the game.
+
+  - rl_model_25-08-17_00-05_iteration_90: {'wins': 28, 'losses': 4972, 'avg_moves_to_win': '20.04', 'avg_moves_to_lose': '8.55'}
+  - rl_model_25-08-17_00-09_iteration_120: {'wins': 60, 'losses': 4940, 'avg_moves_to_win': '20.13', 'avg_moves_to_lose': '9.20'}
+  - rl_model_25-08-17_00-13_iteration_150: {'wins': 132, 'losses': 4868, 'avg_moves_to_win': '22.23', 'avg_moves_to_lose': '10.04'}
+  - rl_model_25-08-17_00-17_iteration_180: {'wins': 170, 'losses': 4830, 'avg_moves_to_win': '22.59', 'avg_moves_to_lose': '10.62'}
+  - rl_model_25-08-17_00-21_iteration_210: {'wins': 202, 'losses': 4798, 'avg_moves_to_win': '23.06', 'avg_moves_to_lose': '11.37'}
+  - rl_model_25-08-17_00-25_iteration_240: {'wins': 243, 'losses': 4757, 'avg_moves_to_win': '23.90', 'avg_moves_to_lose': '11.82'}
+  - rl_model_25-08-17_00-29_iteration_270: {'wins': 281, 'losses': 4719, 'avg_moves_to_win': '24.33', 'avg_moves_to_lose': '12.30'}
+  - rl_model_25-08-17_00-33_iteration_300: {'wins': 355, 'losses': 4645, 'avg_moves_to_win': '24.93', 'avg_moves_to_lose': '12.90'}
+  - rl_model_25-08-17_00-37_iteration_330: {'wins': 413, 'losses': 4587, 'avg_moves_to_win': '25.34', 'avg_moves_to_lose': '13.16'}
+  - rl_model_25-08-17_00-41_iteration_360: {'wins': 426, 'losses': 4574, 'avg_moves_to_win': '25.63', 'avg_moves_to_lose': '13.43'}
+  - rl_model_25-08-17_00-46_iteration_390: {'wins': 464, 'losses': 4536, 'avg_moves_to_win': '25.16', 'avg_moves_to_lose': '13.44'}
+  - rl_model_25-08-17_00-50_iteration_420: {'wins': 587, 'losses': 4413, 'avg_moves_to_win': '25.91', 'avg_moves_to_lose': '13.69'}
+  - rl_model_25-08-17_00-54_iteration_450: {'wins': 531, 'losses': 4469, 'avg_moves_to_win': '25.29', 'avg_moves_to_lose': '13.71'}
+  - rl_model_25-08-17_00-58_iteration_480: {'wins': 613, 'losses': 4387, 'avg_moves_to_win': '25.68', 'avg_moves_to_lose': '14.10'}
+  - rl_model_25-08-17_01-02_iteration_510: {'wins': 636, 'losses': 4364, 'avg_moves_to_win': '25.68', 'avg_moves_to_lose': '14.29'}
+  - rl_model_25-08-17_01-07_iteration_540: {'wins': 643, 'losses': 4357, 'avg_moves_to_win': '25.72', 'avg_moves_to_lose': '14.26'}
+  - rl_model_25-08-17_01-11_iteration_570: {'wins': 664, 'losses': 4336, 'avg_moves_to_win': '25.70', 'avg_moves_to_lose': '14.55'}
+
+* OK so this continued to progress, but it's learning quite a bit slower than other approaches I took. I'm going to commit it, then let's try a slightly smaller model.

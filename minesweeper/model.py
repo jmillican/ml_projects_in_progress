@@ -11,38 +11,21 @@ def loss_function(y_true, y_pred):
     """
     Custom loss function that masks the loss for cells that are not visible.
     """
-
-    # Reshape y_pred to match the shape of y_true
-    # This is necessary because y_pred might be flattened or have a different shape.
-    if len(y_pred.shape) == 2 and y_pred.shape[1] == 162:
-        # Reshape from (batch, 162) to (batch, 9, 9, 2)
-        y_pred_reshape = tf.reshape(y_pred, (-1, 9, 9, 2))
-    elif len(y_pred.shape) == 2 and y_pred.shape[1] == 2:
-        y_pred_reshape = tf.reshape(y_pred, (-1, y_true.shape[1], y_true.shape[2], 2))
-    else:
-        y_pred_reshape = y_pred
-
     mask = tf.cast(tf.not_equal(y_true, 0), tf.float32)  # Mask where y_true is not zero
-    masked_loss = tf.reduce_mean(tf.square(y_true - y_pred_reshape) * mask)
+    masked_loss = tf.reduce_mean(tf.square(y_true - y_pred) * mask)
     return masked_loss
 
 def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) -> TfKerasModel:
     tf.random.set_seed(1234)
     tf.config.run_functions_eagerly(False)
-
-    output_shape_dimensions = np.prod(output_shape)
-
     model = Sequential(
         [
             tf.keras.Input(shape=input_shape, name='input_layer'),  # type: ignore
-            Conv2D(24, (5, 5), activation='leaky_relu', padding='same', name='conv1'),
-            Conv2D(20, (4, 4), activation='leaky_relu', padding='same', name='conv2'),
-            Conv2D(12, (3, 3), activation='leaky_relu', padding='same', name='conv3'),
-            Flatten(name='flatten'),
-            Dense(128, activation='leaky_relu', name='dense1'),
-            Dense(81, activation='leaky_relu', name='dense2'),
-            Dense(output_shape_dimensions, activation='linear', name='output_layer'),
-            # Conv2D(2, (1, 1), activation='linear', padding='same', name='output_layer'),
+            Conv2D(24, (6, 6), activation='leaky_relu', padding='same', name='conv1'),
+            Conv2D(20, (5, 5), activation='leaky_relu', padding='same', name='conv2'),
+            Conv2D(16, (4, 4), activation='leaky_relu', padding='same', name='conv3'),
+            Conv2D(12, (3, 3), activation='leaky_relu', padding='same', name='conv4'),
+            Conv2D(2, (1, 1), activation='linear', padding='same', name='output_layer'),
         ]
     )
     # Use modern Adam optimizer with learning rate schedule

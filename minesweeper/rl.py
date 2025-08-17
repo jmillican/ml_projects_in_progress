@@ -151,6 +151,8 @@ def main():
 
                         target += max_next_q * discount_factor
                         profile_end("Calculate Next Q")
+
+                        
                     boards.append(start_input_boards[i])
                     target_vector = np.zeros((BOARD_SIZE, BOARD_SIZE, 2), dtype=np.float32)
                     if states[i] == CellState.REVEALED:
