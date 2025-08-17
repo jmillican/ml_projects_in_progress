@@ -341,3 +341,33 @@ Initial thoughts:
   - rl_model_25-08-17_11-59_iteration_480: {'wins': 50, 'losses': 4950, 'avg_moves_to_win': '18.32', 'avg_moves_to_lose': '8.75'}
 
 * So this was progressing reasonably. Much slower than others, but it has far more parameters and was still learning. I wonder if I should actually reduce the size of the convolutional layers though - especially the last one, as this will help to reduce the massive increase in parameters we get between this and the dense layer.
+
+* Let's try this 131081 parameter model.
+  - rl_model_25-08-17_16-56_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '2.23'}
+  - rl_model_25-08-17_17-00_iteration_30: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '9.50', 'avg_moves_to_lose': '5.68'}
+  - rl_model_25-08-17_17-08_iteration_90: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '5.00', 'avg_moves_to_lose': '5.67'}
+  - rl_model_25-08-17_17-11_iteration_120: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '11.00', 'avg_moves_to_lose': '6.38'}
+
+* OK this isn't going great yet. Let's try again with just new parameters, and maybe give GeLu a go - just to see how it goes.
+  - rl_model_25-08-17_17-13_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '2.10'}
+  - rl_model_25-08-17_17-18_iteration_30: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '5.00', 'avg_moves_to_lose': '5.41'}
+  - rl_model_25-08-17_17-23_iteration_60: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '4.00', 'avg_moves_to_lose': '5.56'}
+  - rl_model_25-08-17_17-27_iteration_90: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '6.00', 'avg_moves_to_lose': '5.46'}
+  - rl_model_25-08-17_17-32_iteration_120: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '28.00', 'avg_moves_to_lose': '5.37'}
+
+* Yeah this isn't working. Let's just try doing the same again.
+  - rl_model_25-08-17_17-33_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '2.29'}
+  - rl_model_25-08-17_17-38_iteration_30: {'wins': 6, 'losses': 4994, 'avg_moves_to_win': '8.00', 'avg_moves_to_lose': '5.28'}
+  - rl_model_25-08-17_17-42_iteration_60: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '8.00', 'avg_moves_to_lose': '5.46'}
+  - rl_model_25-08-17_17-47_iteration_90: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '14.50', 'avg_moves_to_lose': '5.85'}
+  - rl_model_25-08-17_17-51_iteration_120: {'wins': 4, 'losses': 4996, 'avg_moves_to_win': '12.25', 'avg_moves_to_lose': '6.64'}
+  - rl_model_25-08-17_17-55_iteration_150: {'wins': 3, 'losses': 4997, 'avg_moves_to_win': '11.33', 'avg_moves_to_lose': '6.53'}
+  - rl_model_25-08-17_17-59_iteration_180: {'wins': 6, 'losses': 4994, 'avg_moves_to_win': '16.00', 'avg_moves_to_lose': '7.00'}
+  - rl_model_25-08-17_18-03_iteration_210: {'wins': 11, 'losses': 4989, 'avg_moves_to_win': '16.00', 'avg_moves_to_lose': '7.25'}
+  - rl_model_25-08-17_18-07_iteration_240: {'wins': 27, 'losses': 4973, 'avg_moves_to_win': '18.78', 'avg_moves_to_lose': '7.66'}
+  - rl_model_25-08-17_18-11_iteration_270: {'wins': 24, 'losses': 4976, 'avg_moves_to_win': '19.12', 'avg_moves_to_lose': '7.87'}
+  - ...
+  - rl_model_25-08-17_18-22_iteration_350: {'wins': 35, 'losses': 4965, 'avg_moves_to_win': '20.60', 'avg_moves_to_lose': '7.97'}
+  - rl_model_25-08-17_18-29_iteration_400: {'wins': 31, 'losses': 4969, 'avg_moves_to_win': '20.39', 'avg_moves_to_lose': '8.56'}
+
+* OK this seems to be progressing, but very slowly. I wonder if I should get global state instead by essentially just adding it to every single parameter in additional channels in the input later. Claude suggested this earlier when I asked about providing global state to them (I think calling it Broadcasting or something?) - and I initially dismissed it, because it's duplicative and feels wasteful; but I guess it probably wouldn't actually add more parameters, and the cost of duplication in the input layer seems minimal.

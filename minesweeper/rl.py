@@ -11,7 +11,7 @@ from .profile import profile_start, profile_end, get_profile, print_profiles
 from datetime import datetime
 from .print_board import print_board
 
-discount_factor = 0.95  # Discount factor for future rewards
+discount_factor = 0.92  # Discount factor for future rewards
 RANDOM_PROBABILITY = 0.03  # Probability of making a random move instead of the model's prediction
 
 def save_rl_training_data(boards, target_vectors, filename_prefix='rl_training_data', iteration=0):
@@ -67,7 +67,7 @@ def main():
         reward_vectors = []
         target_vectors = []
         # Save the model after every 30 iterations
-        if (rl_run < 600 and rl_run % 30 == 0) or (rl_run >= 600 and rl_run % 100 == 0):
+        if (rl_run < 300 and rl_run % 30 == 0) or (rl_run >= 300 and rl_run < 600 and rl_run % 50 == 0) or (rl_run >= 600 and rl_run % 150 == 0):
             print(f"Saving model after iteration {rl_run}...")
 
             model_name = "rl_model_{}_iteration_{}".format(datetime.now().strftime('%y-%m-%d_%H-%M'), rl_run)

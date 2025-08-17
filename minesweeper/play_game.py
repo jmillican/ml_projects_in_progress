@@ -153,9 +153,9 @@ def main():
         # Load the latest model chronologically from the models directory
         model, model_name = load_latest_model(offset=offset)
 
-        # Show model architecture and parameter count
-        print("\nModel Summary:")
-        model.summary()
+        # # Show model architecture and parameter count
+        # print("\nModel Summary:")
+        # model.summary()
 
         results = {
             'model1': {'wins': 0, 'losses': 0, 'total_moves_in_winning_games': 0, 'total_moves_in_losing_games': 0},

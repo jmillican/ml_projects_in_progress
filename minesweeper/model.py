@@ -24,10 +24,10 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
     model = Sequential(
         [
             tf.keras.Input(shape=input_shape, name='input_layer'),  # type: ignore
-            Conv2D(80, (5, 5), activation='relu', padding='same', name='conv1'),
-            Conv2D(40, (3, 3), activation='relu', padding='same', name='conv2'),
-            Conv2D(20, (3, 3), activation='relu', padding='same', name='conv3'),
-            Conv2D(6, (3, 3), activation='relu', padding='same', name='conv4'),
+            Conv2D(60, (5, 5), activation='gelu', padding='same', name='conv1'),
+            Conv2D(30, (3, 3), activation='gelu', padding='same', name='conv2'),
+            Conv2D(15, (3, 3), activation='gelu', padding='same', name='conv3'),
+            Conv2D(8, (3, 3), activation='gelu', padding='same', name='conv4'),
             Flatten(name='flatten'),
             Dense(162, activation='linear', name='output_layer'),
             # Conv2D(2, (1, 1), activation='linear', padding='same', name='output_layer'),
