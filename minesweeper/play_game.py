@@ -136,7 +136,7 @@ def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tu
     return [(game.num_moves, game.get_game_state()) for game in games]
 
 def main():
-    offsets_to_load = 2
+    offsets_to_load = 1
 
     for offset in sorted(range(offsets_to_load), reverse=True):
         r = np.random.RandomState(2 ** 31 - 1)

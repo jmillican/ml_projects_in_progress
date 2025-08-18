@@ -22,6 +22,8 @@ LOSE_REWARD = -20.0
 WIN_REWARD = 20.0
 FLAG_MINE_REWARD = 0.0
 REVEAL_CELL_REWARD = 0.0
+INITIAL_LEARNING_RATE = 0.000001  # 1e-6, adjust as needed
+LEARNING_RATE_DECAY = 0.999
 
 def main():
     # model = load_latest_model(verbose=True)
@@ -29,18 +31,14 @@ def main():
     model = create_model(
         input_shape=(BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS,),
         output_shape=(BOARD_SIZE, BOARD_SIZE, 2,))
-    # Update learning rate for RL (lower than pre-training)
-    tensorflow.keras.backend.set_value(
-        model.optimizer.learning_rate,
-        0.000001  # 1e-6, adjust as needed
-    )
 
     rng = np.random.RandomState(123456)  # Fixed seed for reproducibility
-
 
     if NUM_IN_RUN % BATCH_SIZE != 0:
         raise ValueError("NUM_IN_RUN must be divisible by BATCH_SIZE for this setup.")
     iterations = NUM_IN_RUN // BATCH_SIZE
+
+    learning_rate = INITIAL_LEARNING_RATE
     
     for rl_run in range(10000):
         profile_start("Overall RL Run")
@@ -53,7 +51,7 @@ def main():
 
         profile_start("Save Model")
         # Save the model after every 30 iterations
-        if (rl_run < 300 and rl_run % 30 == 0) or (rl_run >= 300 and rl_run < 600 and rl_run % 50 == 0) or (rl_run >= 600 and rl_run % 150 == 0):
+        if (rl_run < 30 and rl_run % 10 == 0) or (rl_run >= 30 and rl_run < 300 and rl_run % 30 == 0) or (rl_run >= 300 and rl_run < 600 and rl_run % 50 == 0) or (rl_run >= 600 and rl_run % 150 == 0):
             print(f"Saving model after iteration {rl_run}...")
 
             model_name = "rl_model_{}_iteration_{}".format(datetime.now().strftime('%y-%m-%d_%H-%M'), rl_run)
@@ -174,8 +172,17 @@ def main():
                 break
 
         print(f"Collected {len(boards)} training examples.")
-        
-        profile_start("Model Fit")
+        print(f"Training with learning rate: {learning_rate}")
+
+
+        # Update learning rate for RL (lower than pre-training)
+        tensorflow.keras.backend.set_value(
+            model.optimizer.learning_rate,
+            learning_rate
+        )
+        learning_rate *= LEARNING_RATE_DECAY
+
+        profile_start(f"Model Fit")
         model.fit(
             np.array(boards).reshape(-1, BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS),
             np.array(target_vectors).reshape(-1, BOARD_SIZE, BOARD_SIZE, 2),

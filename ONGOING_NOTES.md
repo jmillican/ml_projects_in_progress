@@ -508,11 +508,11 @@ Initial thoughts:
 * Actually thinking about it, 0.92 is probably too aggressive a decay rate in that case. I'll switch it to 0.96 or so.
 
   - rl_model_25-08-18_17-04_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '4.77'}
+  -   - rl_model_25-08-18_17-07_iteration_30: {'wins': 29, 'losses': 4971, 'avg_moves_to_win': '20.17', 'avg_moves_to_lose': '9.02'}
   - rl_model_25-08-18_17-10_iteration_60: {'wins': 220, 'losses': 4780, 'avg_moves_to_win': '23.52', 'avg_moves_to_lose': '11.28'}
   - rl_model_25-08-18_17-13_iteration_90: {'wins': 290, 'losses': 4710, 'avg_moves_to_win': '25.14', 'avg_moves_to_lose': '12.68'}
   - rl_model_25-08-18_17-26_iteration_210: {'wins': 1790, 'losses': 3210, 'avg_moves_to_win': '27.01', 'avg_moves_to_lose': '14.83'}
   - rl_model_25-08-18_17-30_iteration_240: {'wins': 1881, 'losses': 3119, 'avg_moves_to_win': '27.01', 'avg_moves_to_lose': '15.36'}
-  - rl_model_25-08-18_17-07_iteration_30: {'wins': 29, 'losses': 4971, 'avg_moves_to_win': '20.17', 'avg_moves_to_lose': '9.02'}
   - rl_model_25-08-18_17-33_iteration_270: {'wins': 2099, 'losses': 2901, 'avg_moves_to_win': '26.62', 'avg_moves_to_lose': '15.58'}
   - rl_model_25-08-18_17-36_iteration_300: {'wins': 2197, 'losses': 2803, 'avg_moves_to_win': '26.97', 'avg_moves_to_lose': '15.49'}
   - rl_model_25-08-18_17-42_iteration_350: {'wins': 2341, 'losses': 2659, 'avg_moves_to_win': '26.63', 'avg_moves_to_lose': '14.84'}
@@ -523,3 +523,34 @@ Initial thoughts:
   - rl_model_25-08-18_19-01_iteration_1050: {'wins': 2938, 'losses': 2062, 'avg_moves_to_win': '27.07', 'avg_moves_to_lose': '15.05'}
   - rl_model_25-08-18_19-18_iteration_1200: {'wins': 2922, 'losses': 2078, 'avg_moves_to_win': '27.16', 'avg_moves_to_lose': '14.62'}
   - rl_model_25-08-18_19-36_iteration_1350: {'wins': 2941, 'losses': 2059, 'avg_moves_to_win': '27.09', 'avg_moves_to_lose': '14.99'}
+
+* OK so this is the most successful model so far, but seems to be plateauing a bit. I'm happy with the new reward approach; but might try to change the network to be a smaller one again. I'll keep the actual filter sizes (and maybe make some of the existing 3x3 filters 5x5), but have fewer of them. We probably don't need to be a strict multiple of 8 either: some properties are rotational or symmetrically relevant; but likely not all of them.
+* I'll also add in learning rate decay, as I worry that it's harder for the model to find truly optimal parameters later on in training.
+* In theory I should stabilise the learning by having a separate target network, and just updating this less frequently, but I'm reluctant to do this yet - as it will double the amount of inference I need to do, and profiling shows inference as already taking 50% of the time. Maybe it would genuinely stabilise/accelerate learning by more than the gain - but I might try that later.
+
+  - rl_model_25-08-18_19-57_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-18_19-57_iteration_2: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.79'}
+  - rl_model_25-08-18_19-57_iteration_4: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '4.00'}
+  - rl_model_25-08-18_19-57_iteration_6: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '6.06'}
+  - rl_model_25-08-18_19-58_iteration_8: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '14.00', 'avg_moves_to_lose': '6.29'}
+  - rl_model_25-08-18_19-58_iteration_10: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '6.52'}
+  - rl_model_25-08-18_19-59_iteration_20: {'wins': 4, 'losses': 4996, 'avg_moves_to_win': '17.25', 'avg_moves_to_lose': '6.81'}
+  - rl_model_25-08-18_20-00_iteration_30: {'wins': 10, 'losses': 4990, 'avg_moves_to_win': '17.80', 'avg_moves_to_lose': '8.20'}
+  - rl_model_25-08-18_20-03_iteration_60: {'wins': 83, 'losses': 4917, 'avg_moves_to_win': '19.95', 'avg_moves_to_lose': '9.38'}
+  - rl_model_25-08-18_20-07_iteration_90: {'wins': 193, 'losses': 4807, 'avg_moves_to_win': '22.43', 'avg_moves_to_lose': '10.23'}
+  - rl_model_25-08-18_20-10_iteration_120: {'wins': 334, 'losses': 4666, 'avg_moves_to_win': '24.66', 'avg_moves_to_lose': '11.19'}
+  - rl_model_25-08-18_20-14_iteration_150: {'wins': 427, 'losses': 4573, 'avg_moves_to_win': '25.39', 'avg_moves_to_lose': '11.73'}
+  - rl_model_25-08-18_20-17_iteration_180: {'wins': 565, 'losses': 4435, 'avg_moves_to_win': '26.13', 'avg_moves_to_lose': '12.36'}
+  - rl_model_25-08-18_20-21_iteration_210: {'wins': 873, 'losses': 4127, 'avg_moves_to_win': '26.51', 'avg_moves_to_lose': '13.20'}
+  - rl_model_25-08-18_20-24_iteration_240: {'wins': 1059, 'losses': 3941, 'avg_moves_to_win': '26.41', 'avg_moves_to_lose': '13.85'}
+  - rl_model_25-08-18_20-28_iteration_270: {'wins': 1260, 'losses': 3740, 'avg_moves_to_win': '26.86', 'avg_moves_to_lose': '13.76'}
+
+* This is learning a bit slower than the previous one. I'll try again to see if a better initialisation helps.
+
+  - rl_model_25-08-18_20-34_iteration_10: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '4.00', 'avg_moves_to_lose': '6.04'}
+  - rl_model_25-08-18_20-35_iteration_20: {'wins': 3, 'losses': 4997, 'avg_moves_to_win': '17.67', 'avg_moves_to_lose': '7.86'}
+  - rl_model_25-08-18_20-36_iteration_30: {'wins': 19, 'losses': 4981, 'avg_moves_to_win': '18.74', 'avg_moves_to_lose': '8.56'}
+  - rl_model_25-08-18_20-45_iteration_120: {'wins': 204, 'losses': 4796, 'avg_moves_to_win': '23.74', 'avg_moves_to_lose': '11.65'}
+  - rl_model_25-08-18_21-02_iteration_270: {'wins': 853, 'losses': 4147, 'avg_moves_to_win': '25.72', 'avg_moves_to_lose': '14.42'}
+
+* Maybe I'll go back to a larger model.
