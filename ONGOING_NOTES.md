@@ -424,3 +424,26 @@ Initial thoughts:
   - rl_model_25-08-18_09-47_iteration_5100: {'wins': 1332, 'losses': 3668, 'avg_moves_to_win': '27.17', 'avg_moves_to_lose': '15.02'}
 
 * This seems to have fully converged, and not to an amazing spot! I'm going to commit, try going back to ReLu, and add another smaller convolutional layer at the start (to hopefully extract more interesting features before it goes into a wider layer). It might also be time for me to start seriously conisdering changing my Max Q calculation to take into account both the predicted Max Q, and the observed one (from the one play-through of the game which we do to completion).
+  - rl_model_25-08-18_09-56_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.23'}
+  - rl_model_25-08-18_09-59_iteration_30: {'wins': 13, 'losses': 4987, 'avg_moves_to_win': '16.92', 'avg_moves_to_lose': '7.33'}
+  - rl_model_25-08-18_10-02_iteration_60: {'wins': 59, 'losses': 4941, 'avg_moves_to_win': '19.66', 'avg_moves_to_lose': '9.14'}
+  - rl_model_25-08-18_10-05_iteration_90: {'wins': 95, 'losses': 4905, 'avg_moves_to_win': '21.46', 'avg_moves_to_lose': '10.39'}
+  - rl_model_25-08-18_10-08_iteration_120: {'wins': 185, 'losses': 4815, 'avg_moves_to_win': '24.57', 'avg_moves_to_lose': '12.33'}
+  - rl_model_25-08-18_10-11_iteration_150: {'wins': 295, 'losses': 4705, 'avg_moves_to_win': '25.47', 'avg_moves_to_lose': '13.71'}
+  - rl_model_25-08-18_10-15_iteration_180: {'wins': 410, 'losses': 4590, 'avg_moves_to_win': '26.28', 'avg_moves_to_lose': '14.77'}
+  - rl_model_25-08-18_10-19_iteration_210: {'wins': 470, 'losses': 4530, 'avg_moves_to_win': '25.93', 'avg_moves_to_lose': '16.00'}
+  - rl_model_25-08-18_10-23_iteration_240: {'wins': 656, 'losses': 4344, 'avg_moves_to_win': '26.75', 'avg_moves_to_lose': '16.47'}
+  - rl_model_25-08-18_10-26_iteration_270: {'wins': 776, 'losses': 4224, 'avg_moves_to_win': '27.06', 'avg_moves_to_lose': '16.70'}
+  - rl_model_25-08-18_10-30_iteration_300: {'wins': 768, 'losses': 4232, 'avg_moves_to_win': '26.91', 'avg_moves_to_lose': '17.28'}
+  - rl_model_25-08-18_10-37_iteration_350: {'wins': 1145, 'losses': 3855, 'avg_moves_to_win': '27.43', 'avg_moves_to_lose': '17.56'}
+  - rl_model_25-08-18_10-44_iteration_400: {'wins': 1500, 'losses': 3500, 'avg_moves_to_win': '28.34', 'avg_moves_to_lose': '17.57'}
+  - rl_model_25-08-18_10-51_iteration_450: {'wins': 1570, 'losses': 3430, 'avg_moves_to_win': '28.25', 'avg_moves_to_lose': '17.58'}
+  - rl_model_25-08-18_10-58_iteration_500: {'wins': 1717, 'losses': 3283, 'avg_moves_to_win': '27.90', 'avg_moves_to_lose': '17.71'}
+  - rl_model_25-08-18_11-04_iteration_550: {'wins': 1944, 'losses': 3056, 'avg_moves_to_win': '28.24', 'avg_moves_to_lose': '17.47'}
+  - rl_model_25-08-18_11-11_iteration_600: {'wins': 2042, 'losses': 2958, 'avg_moves_to_win': '28.08', 'avg_moves_to_lose': '17.25'}
+  - rl_model_25-08-18_11-31_iteration_750: {'wins': 2123, 'losses': 2877, 'avg_moves_to_win': '28.39', 'avg_moves_to_lose': '17.91'}
+  - rl_model_25-08-18_11-51_iteration_900: {'wins': 2291, 'losses': 2709, 'avg_moves_to_win': '28.28', 'avg_moves_to_lose': '18.07'}
+  - rl_model_25-08-18_12-11_iteration_1050: {'wins': 2367, 'losses': 2633, 'avg_moves_to_win': '28.30', 'avg_moves_to_lose': '17.36'}
+
+* OK this approach was incredibly promising! I realise though that I also need to add a channel to show if something is a valid square; so that the model's convolutional layers can distinguish between invalid locations and un-revealed squares (both currently all-zeros in the input).
+* It also occurred to me, although I won't implement this yet, that minesweeper has horizontal, vertical and rotational symmetry (4x rotational symmetry because my board is square; otherwise 2x). In theory every training example I do could probably be flipped once - and then each of them rotated 4 times (flip horizontally and rotate twice should be equivalent to vertical, so we don't need to do that). That might help the training to learn faster; although I don't know if there might be other ways to better exploit this. I might try something along these later on; though I'll just start with the extra channel - because the previous attempt was going pretty well.
