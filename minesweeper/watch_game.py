@@ -60,7 +60,7 @@ def main():
 
             print(f"Move: ({row}, {col}), State: {state.name}")
             print_board(game)
-        go = (game.get_game_state() == GameState.LOST)
+        go = (game.get_game_state() == GameState.WON)
     flush_print_buffer()
 
 

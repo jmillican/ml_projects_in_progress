@@ -505,3 +505,21 @@ Initial thoughts:
   - rl_model_25-08-18_16-58_iteration_240: {'wins': 2389, 'losses': 2611, 'avg_moves_to_win': '27.88', 'avg_moves_to_lose': '15.37'}
 
 * This is looking really good; but I'm going to stop it now, and then try and set all rewards aside from winning and loss to zero.
+* Actually thinking about it, 0.92 is probably too aggressive a decay rate in that case. I'll switch it to 0.96 or so.
+
+  - rl_model_25-08-18_17-04_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '4.77'}
+  - rl_model_25-08-18_17-10_iteration_60: {'wins': 220, 'losses': 4780, 'avg_moves_to_win': '23.52', 'avg_moves_to_lose': '11.28'}
+  - rl_model_25-08-18_17-13_iteration_90: {'wins': 290, 'losses': 4710, 'avg_moves_to_win': '25.14', 'avg_moves_to_lose': '12.68'}
+  - rl_model_25-08-18_17-26_iteration_210: {'wins': 1790, 'losses': 3210, 'avg_moves_to_win': '27.01', 'avg_moves_to_lose': '14.83'}
+  - rl_model_25-08-18_17-30_iteration_240: {'wins': 1881, 'losses': 3119, 'avg_moves_to_win': '27.01', 'avg_moves_to_lose': '15.36'}
+  - rl_model_25-08-18_17-07_iteration_30: {'wins': 29, 'losses': 4971, 'avg_moves_to_win': '20.17', 'avg_moves_to_lose': '9.02'}
+  - rl_model_25-08-18_17-33_iteration_270: {'wins': 2099, 'losses': 2901, 'avg_moves_to_win': '26.62', 'avg_moves_to_lose': '15.58'}
+  - rl_model_25-08-18_17-36_iteration_300: {'wins': 2197, 'losses': 2803, 'avg_moves_to_win': '26.97', 'avg_moves_to_lose': '15.49'}
+  - rl_model_25-08-18_17-42_iteration_350: {'wins': 2341, 'losses': 2659, 'avg_moves_to_win': '26.63', 'avg_moves_to_lose': '14.84'}
+  - rl_model_25-08-18_17-53_iteration_450: {'wins': 2545, 'losses': 2455, 'avg_moves_to_win': '26.96', 'avg_moves_to_lose': '15.09'}
+  - rl_model_25-08-18_17-59_iteration_500: {'wins': 2618, 'losses': 2382, 'avg_moves_to_win': '27.14', 'avg_moves_to_lose': '14.93'}
+  - rl_model_25-08-18_18-27_iteration_750: {'wins': 2833, 'losses': 2167, 'avg_moves_to_win': '27.38', 'avg_moves_to_lose': '15.45'}
+  - rl_model_25-08-18_18-44_iteration_900: {'wins': 2905, 'losses': 2095, 'avg_moves_to_win': '27.06', 'avg_moves_to_lose': '15.02'}
+  - rl_model_25-08-18_19-01_iteration_1050: {'wins': 2938, 'losses': 2062, 'avg_moves_to_win': '27.07', 'avg_moves_to_lose': '15.05'}
+  - rl_model_25-08-18_19-18_iteration_1200: {'wins': 2922, 'losses': 2078, 'avg_moves_to_win': '27.16', 'avg_moves_to_lose': '14.62'}
+  - rl_model_25-08-18_19-36_iteration_1350: {'wins': 2941, 'losses': 2059, 'avg_moves_to_win': '27.09', 'avg_moves_to_lose': '14.99'}

@@ -11,12 +11,17 @@ from .profile import profile_start, profile_end, get_profile, print_profiles
 from datetime import datetime
 from .print_board import print_board
 
-discount_factor = 0.92  # Discount factor for future rewards
+discount_factor = 0.96  # Discount factor for future rewards
 RANDOM_PROBABILITY = 0.03  # Probability of making a random move instead of the model's prediction
 
 NUM_IN_RUN = 5000
 BATCH_SIZE = 1000
 TARGET_SAMPLES_PER_ITERATION = 20000
+
+LOSE_REWARD = -20.0
+WIN_REWARD = 20.0
+FLAG_MINE_REWARD = 0.0
+REVEAL_CELL_REWARD = 0.0
 
 def main():
     # model = load_latest_model(verbose=True)
@@ -111,16 +116,16 @@ def main():
 
                     profile_start("Determine Rewards")
                     if game.get_game_state() == GameState.LOST:
-                        rewards[i] = -20.0
+                        rewards[i] = LOSE_REWARD
                     elif game.get_game_state() == GameState.WON:
-                        rewards[i] = 20.0
+                        rewards[i] = WIN_REWARD
                     else:
                         if state == CellState.REVEALED:
                             # Reward for revealing a cell
-                            rewards[i] = 0.1
+                            rewards[i] = REVEAL_CELL_REWARD
                         elif state == CellState.FLAGGED:
                             # Reward for flagging a mine
-                            rewards[i] = 1.0
+                            rewards[i] = FLAG_MINE_REWARD
                         else:
                             raise Exception(f"Invalid state: {state}")
                     profile_end("Determine Rewards")
