@@ -396,3 +396,31 @@ Initial thoughts:
 * Let's give it another go, but normalising the inputs.
 * Actually, first let's do some profiling to see about making this whole thing a bit faster.
 * OK so I think I've addressed a few of the efficiency concerns.
+
+  - rl_model_25-08-17_22-36_iteration_0: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '9.50', 'avg_moves_to_lose': '3.47'}
+  - rl_model_25-08-17_22-39_iteration_30: {'wins': 28, 'losses': 4972, 'avg_moves_to_win': '17.79', 'avg_moves_to_lose': '7.97'}
+
+* Wow, this is too good to be true straight out the gate. I think I must have got lucky with starting parameters - but let's see how it evolves.
+
+  - rl_model_25-08-17_22-42_iteration_60: {'wins': 77, 'losses': 4923, 'avg_moves_to_win': '21.17', 'avg_moves_to_lose': '9.50'}
+  - rl_model_25-08-17_22-45_iteration_90: {'wins': 74, 'losses': 4926, 'avg_moves_to_win': '21.70', 'avg_moves_to_lose': '10.00'}
+  - rl_model_25-08-17_22-49_iteration_120: {'wins': 88, 'losses': 4912, 'avg_moves_to_win': '23.12', 'avg_moves_to_lose': '10.70'}
+  - rl_model_25-08-17_22-52_iteration_150: {'wins': 127, 'losses': 4873, 'avg_moves_to_win': '24.18', 'avg_moves_to_lose': '11.18'}
+  - rl_model_25-08-17_22-55_iteration_180: {'wins': 162, 'losses': 4838, 'avg_moves_to_win': '25.64', 'avg_moves_to_lose': '12.06'}
+  - rl_model_25-08-17_22-59_iteration_210: {'wins': 204, 'losses': 4796, 'avg_moves_to_win': '26.22', 'avg_moves_to_lose': '12.60'}
+  - rl_model_25-08-17_23-03_iteration_240: {'wins': 257, 'losses': 4743, 'avg_moves_to_win': '26.52', 'avg_moves_to_lose': '13.76'}
+  - rl_model_25-08-17_23-06_iteration_270: {'wins': 319, 'losses': 4681, 'avg_moves_to_win': '26.56', 'avg_moves_to_lose': '13.89'}
+
+* One thing I'll note on this is that my GPU isn't being fully utilised, so we might be able to increase batch size for some performance gains.
+
+  - rl_model_25-08-17_23-36_iteration_500: {'wins': 710, 'losses': 4290, 'avg_moves_to_win': '26.99', 'avg_moves_to_lose': '14.82'}
+  - rl_model_25-08-17_23-49_iteration_600: {'wins': 840, 'losses': 4160, 'avg_moves_to_win': '27.09', 'avg_moves_to_lose': '15.10'}
+  - rl_model_25-08-18_00-10_iteration_750: {'wins': 979, 'losses': 4021, 'avg_moves_to_win': '27.16', 'avg_moves_to_lose': '15.13'}
+  - rl_model_25-08-18_00-30_iteration_900: {'wins': 1093, 'losses': 3907, 'avg_moves_to_win': '27.36', 'avg_moves_to_lose': '15.45'}
+  - rl_model_25-08-18_08-28_iteration_4500: {'wins': 1332, 'losses': 3668, 'avg_moves_to_win': '27.17', 'avg_moves_to_lose': '15.02'}
+  - rl_model_25-08-18_08-47_iteration_4650: {'wins': 1332, 'losses': 3668, 'avg_moves_to_win': '27.17', 'avg_moves_to_lose': '15.02'}
+  - rl_model_25-08-18_09-07_iteration_4800: {'wins': 1332, 'losses': 3668, 'avg_moves_to_win': '27.17', 'avg_moves_to_lose': '15.02'}
+  - rl_model_25-08-18_09-27_iteration_4950: {'wins': 1332, 'losses': 3668, 'avg_moves_to_win': '27.17', 'avg_moves_to_lose': '15.02'}
+  - rl_model_25-08-18_09-47_iteration_5100: {'wins': 1332, 'losses': 3668, 'avg_moves_to_win': '27.17', 'avg_moves_to_lose': '15.02'}
+
+* This seems to have fully converged, and not to an amazing spot! I'm going to commit, try going back to ReLu, and add another smaller convolutional layer at the start (to hopefully extract more interesting features before it goes into a wider layer). It might also be time for me to start seriously conisdering changing my Max Q calculation to take into account both the predicted Max Q, and the observed one (from the one play-through of the game which we do to completion).
