@@ -14,8 +14,8 @@ from .print_board import print_board
 discount_factor = 0.92  # Discount factor for future rewards
 RANDOM_PROBABILITY = 0.03  # Probability of making a random move instead of the model's prediction
 
-NUM_IN_RUN = 4500
-BATCH_SIZE = 750
+NUM_IN_RUN = 5000
+BATCH_SIZE = 1000
 TARGET_SAMPLES_PER_ITERATION = 20000
 
 def main():
@@ -111,9 +111,9 @@ def main():
 
                     profile_start("Determine Rewards")
                     if game.get_game_state() == GameState.LOST:
-                        rewards[i] = -10.0
+                        rewards[i] = -20.0
                     elif game.get_game_state() == GameState.WON:
-                        rewards[i] = 10.0
+                        rewards[i] = 20.0
                     else:
                         if state == CellState.REVEALED:
                             # Reward for revealing a cell

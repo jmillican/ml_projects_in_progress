@@ -487,4 +487,21 @@ Initial thoughts:
   - rl_model_25-08-18_16-07_iteration_1950: {'wins': 2538, 'losses': 2462, 'avg_moves_to_win': '26.98', 'avg_moves_to_lose': '13.32'}
   - rl_model_25-08-18_16-23_iteration_2100: {'wins': 2563, 'losses': 2437, 'avg_moves_to_win': '26.95', 'avg_moves_to_lose': '13.32'}
 
-* OK this is very promising, but I think I should expand the size of my kernels a little at this point.
+* OK this is very promising, but I think I should expand the number kernels a little at this point.
+* I'll also change the reward function to reward wins more than 10x flags. If it can learn to win without flagging anything, that's better than having to flag things.
+
+  - rl_model_25-08-18_16-31_iteration_0: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '7.00', 'avg_moves_to_lose': '4.51'}
+  - rl_model_25-08-18_16-34_iteration_30: {'wins': 66, 'losses': 4934, 'avg_moves_to_win': '24.62', 'avg_moves_to_lose': '9.99'}
+  - rl_model_25-08-18_16-37_iteration_60: {'wins': 251, 'losses': 4749, 'avg_moves_to_win': '26.04', 'avg_moves_to_lose': '11.68'}
+  - rl_model_25-08-18_16-40_iteration_90: {'wins': 610, 'losses': 4390, 'avg_moves_to_win': '27.29', 'avg_moves_to_lose': '14.00'}
+  - rl_model_25-08-18_16-44_iteration_120: {'wins': 1044, 'losses': 3956, 'avg_moves_to_win': '27.18', 'avg_moves_to_lose': '15.54'}
+
+* Wow, this is learning so much faster. I can't help but wonder if this is more about the change to the reward than the model size or anything though: previously a win was worth the same as 10 flags - and you could imagine local minima where it's easier to attempt to get more flags than to actually win, and so the game might be more likely to lose. Now it's much more incentivised to actually win the game.
+* Honestly I wonder if I should have only used win/loss rewards, and nothing intermediate. And maybe even make flags toggleable again, instead of an instant death for flagging a non-mine (more standard rules). Perfect gameplay wouldn't require any flags anyway, and it could learn that!
+
+  - rl_model_25-08-18_16-47_iteration_150: {'wins': 1666, 'losses': 3334, 'avg_moves_to_win': '27.99', 'avg_moves_to_lose': '15.32'}
+  - rl_model_25-08-18_16-51_iteration_180: {'wins': 1911, 'losses': 3089, 'avg_moves_to_win': '28.07', 'avg_moves_to_lose': '15.25'}
+  - rl_model_25-08-18_16-54_iteration_210: {'wins': 2212, 'losses': 2788, 'avg_moves_to_win': '27.94', 'avg_moves_to_lose': '15.58'}
+  - rl_model_25-08-18_16-58_iteration_240: {'wins': 2389, 'losses': 2611, 'avg_moves_to_win': '27.88', 'avg_moves_to_lose': '15.37'}
+
+* This is looking really good; but I'm going to stop it now, and then try and set all rewards aside from winning and loss to zero.
