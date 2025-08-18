@@ -14,6 +14,7 @@ class GameState(Enum):
     LOST = 2
 
 BOARD_SIZE = 9
+INPUT_CHANNELS = 6
 
 class Minesweeper:
     def __init__(self, rows: int = BOARD_SIZE, cols: int = BOARD_SIZE, mines: int = 10, seed: Optional[int] = None):
@@ -223,13 +224,16 @@ class Minesweeper:
             - [0, 0, 1, ]: flagged cell.
             - [1, 0, 2, ]: revealed mine - although this should never actually happen in the model.
 
-            The remaining two parameters of each cell represent the global state of the game, with the first
+            The next two parameters of each cell represent the global state of the game, with the first
             representing the number of remaining mines, and the second representing the number of un-revealed cells.
+
+            The sixth and final parameter is just set to 1.0; simply so that the convolutional layers can distinguish
+            between valid cells, and padding cells.
         """
         if self.memoized_input_board is not None:
             return self.memoized_input_board
         
-        input_board = np.full((self.rows, self.cols, 5), 0, dtype=np.float16)
+        input_board = np.full((self.rows, self.cols, INPUT_CHANNELS), 0, dtype=np.float16)
 
         input_board[:, :, 0] = np.float16(self.cell_states == CellState.REVEALED.value)
         input_board[:, :, 1] = np.float16(np.where(self.cell_states == CellState.REVEALED.value, self.adjacent_mines / 1.5, 0))
@@ -241,6 +245,7 @@ class Minesweeper:
         remaining_cells = np.sum(self.cell_states == CellState.HIDDEN.value)
         input_board[:, :, 3] = np.float16(remaining_mines) / 10.0
         input_board[:, :, 4] = np.float16(remaining_cells) / 81.0
+        input_board[:, :, 5] = 1.0
 
         self.memoized_input_board = input_board
         return input_board

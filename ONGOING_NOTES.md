@@ -423,6 +423,8 @@ Initial thoughts:
   - rl_model_25-08-18_09-27_iteration_4950: {'wins': 1332, 'losses': 3668, 'avg_moves_to_win': '27.17', 'avg_moves_to_lose': '15.02'}
   - rl_model_25-08-18_09-47_iteration_5100: {'wins': 1332, 'losses': 3668, 'avg_moves_to_win': '27.17', 'avg_moves_to_lose': '15.02'}
 
+## 18-08-2025
+
 * This seems to have fully converged, and not to an amazing spot! I'm going to commit, try going back to ReLu, and add another smaller convolutional layer at the start (to hopefully extract more interesting features before it goes into a wider layer). It might also be time for me to start seriously conisdering changing my Max Q calculation to take into account both the predicted Max Q, and the observed one (from the one play-through of the game which we do to completion).
   - rl_model_25-08-18_09-56_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.23'}
   - rl_model_25-08-18_09-59_iteration_30: {'wins': 13, 'losses': 4987, 'avg_moves_to_win': '16.92', 'avg_moves_to_lose': '7.33'}
@@ -447,3 +449,42 @@ Initial thoughts:
 
 * OK this approach was incredibly promising! I realise though that I also need to add a channel to show if something is a valid square; so that the model's convolutional layers can distinguish between invalid locations and un-revealed squares (both currently all-zeros in the input).
 * It also occurred to me, although I won't implement this yet, that minesweeper has horizontal, vertical and rotational symmetry (4x rotational symmetry because my board is square; otherwise 2x). In theory every training example I do could probably be flipped once - and then each of them rotated 4 times (flip horizontally and rotate twice should be equivalent to vertical, so we don't need to do that). That might help the training to learn faster; although I don't know if there might be other ways to better exploit this. I might try something along these later on; though I'll just start with the extra channel - because the previous attempt was going pretty well.
+
+  - rl_model_25-08-18_12-39_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.83'}
+  - rl_model_25-08-18_12-42_iteration_30: {'wins': 2, 'losses': 4998, 'avg_moves_to_win': '16.50', 'avg_moves_to_lose': '7.27'}
+
+* Thinking about it actually; this symmetry might imply a little about the numbers of filters that I should go for. E.g. if I've identified 8 different permutations that essentially all need to behave the same; then I potentially need to have a multiple of 8 filters - as I'd expect to see this sort of duplication. OR alternatively, I should see if Tensorflow has a way of running the same filter in 8 different rotations - that would arguably be even better, because then I can have far far fewer parmeters.
+
+  - rl_model_25-08-18_12-45_iteration_60: {'wins': 103, 'losses': 4897, 'avg_moves_to_win': '22.57', 'avg_moves_to_lose': '9.82'}
+  - rl_model_25-08-18_12-48_iteration_90: {'wins': 120, 'losses': 4880, 'avg_moves_to_win': '23.90', 'avg_moves_to_lose': '10.63'}
+
+* Claude reckons I have a decent idea there; but that Tensorflow may not natively support it. It seems like e2cnn in PyTorch might support it - so maybe I should consider switching to PyTorch (I understand it's more modern and more popular anyway). But I'll continue seeing how this model training plays out for a while.
+
+  - rl_model_25-08-18_12-50_iteration_120: {'wins': 151, 'losses': 4849, 'avg_moves_to_win': '24.95', 'avg_moves_to_lose': '11.58'}
+
+* At this point it seems to be learning comparably fast, or maybe slightly slower than the previous one. I wonder if that's just because we have more parameters - and probably the new information I've given it is once-again most useful in longer, more complex games after it has learned basic strategy.
+
+  - rl_model_25-08-18_12-53_iteration_150: {'wins': 201, 'losses': 4799, 'avg_moves_to_win': '25.84', 'avg_moves_to_lose': '12.10'}
+  - rl_model_25-08-18_12-56_iteration_180: {'wins': 246, 'losses': 4754, 'avg_moves_to_win': '25.30', 'avg_moves_to_lose': '12.99'}
+  - rl_model_25-08-18_13-00_iteration_210: {'wins': 474, 'losses': 4526, 'avg_moves_to_win': '25.95', 'avg_moves_to_lose': '13.63'}
+  - rl_model_25-08-18_13-03_iteration_240: {'wins': 612, 'losses': 4388, 'avg_moves_to_win': '26.33', 'avg_moves_to_lose': '13.79'}
+  - rl_model_25-08-18_13-06_iteration_270: {'wins': 871, 'losses': 4129, 'avg_moves_to_win': '26.99', 'avg_moves_to_lose': '14.13'}
+  - rl_model_25-08-18_13-10_iteration_300: {'wins': 1007, 'losses': 3993, 'avg_moves_to_win': '27.21', 'avg_moves_to_lose': '14.13'}
+  - rl_model_25-08-18_13-15_iteration_350: {'wins': 1142, 'losses': 3858, 'avg_moves_to_win': '27.19', 'avg_moves_to_lose': '15.21'}
+  - rl_model_25-08-18_13-20_iteration_400: {'wins': 1491, 'losses': 3509, 'avg_moves_to_win': '27.53', 'avg_moves_to_lose': '15.38'}
+  - rl_model_25-08-18_13-26_iteration_450: {'wins': 1614, 'losses': 3386, 'avg_moves_to_win': '27.57', 'avg_moves_to_lose': '14.51'}
+  - rl_model_25-08-18_13-31_iteration_500: {'wins': 1794, 'losses': 3206, 'avg_moves_to_win': '27.81', 'avg_moves_to_lose': '14.80'}
+  - rl_model_25-08-18_13-37_iteration_550: {'wins': 1962, 'losses': 3038, 'avg_moves_to_win': '27.50', 'avg_moves_to_lose': '14.96'}
+  - rl_model_25-08-18_13-42_iteration_600: {'wins': 1998, 'losses': 3002, 'avg_moves_to_win': '27.44', 'avg_moves_to_lose': '14.76'}
+  - rl_model_25-08-18_13-58_iteration_750: {'wins': 2310, 'losses': 2690, 'avg_moves_to_win': '27.48', 'avg_moves_to_lose': '14.82'}
+  - rl_model_25-08-18_14-14_iteration_900: {'wins': 2320, 'losses': 2680, 'avg_moves_to_win': '27.54', 'avg_moves_to_lose': '13.86'}
+  - rl_model_25-08-18_14-31_iteration_1050: {'wins': 2463, 'losses': 2537, 'avg_moves_to_win': '27.21', 'avg_moves_to_lose': '13.92'}
+  - rl_model_25-08-18_14-47_iteration_1200: {'wins': 2495, 'losses': 2505, 'avg_moves_to_win': '27.15', 'avg_moves_to_lose': '13.62'}
+  - rl_model_25-08-18_15-03_iteration_1350: {'wins': 2487, 'losses': 2513, 'avg_moves_to_win': '27.16', 'avg_moves_to_lose': '13.62'}
+  - rl_model_25-08-18_15-19_iteration_1500: {'wins': 2520, 'losses': 2480, 'avg_moves_to_win': '27.06', 'avg_moves_to_lose': '13.32'}
+  - rl_model_25-08-18_15-35_iteration_1650: {'wins': 2551, 'losses': 2449, 'avg_moves_to_win': '27.14', 'avg_moves_to_lose': '13.33'}
+  - rl_model_25-08-18_15-51_iteration_1800: {'wins': 2531, 'losses': 2469, 'avg_moves_to_win': '26.99', 'avg_moves_to_lose': '13.06'}
+  - rl_model_25-08-18_16-07_iteration_1950: {'wins': 2538, 'losses': 2462, 'avg_moves_to_win': '26.98', 'avg_moves_to_lose': '13.32'}
+  - rl_model_25-08-18_16-23_iteration_2100: {'wins': 2563, 'losses': 2437, 'avg_moves_to_win': '26.95', 'avg_moves_to_lose': '13.32'}
+
+* OK this is very promising, but I think I should expand the size of my kernels a little at this point.

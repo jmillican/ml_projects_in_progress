@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from .minesweeper import GameState, Minesweeper, CellState, BOARD_SIZE
+from .minesweeper import GameState, Minesweeper, CellState, BOARD_SIZE, INPUT_CHANNELS
 from .model import load_latest_model, load_model
 from .print_board import print_board
 import tensorflow as tf
@@ -18,13 +18,13 @@ models_dir = os.path.join(os.path.dirname(__file__), 'models')
 def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndarray:
     input_board = game.get_input_board()
 
-    reshaped_input = input_board.reshape(1, BOARD_SIZE, BOARD_SIZE, 5)
+    reshaped_input = input_board.reshape(1, BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS)
     actions = model(reshaped_input, training=False).numpy()
     reshaped = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
     return reshaped
 
 def produce_model_predictions_batch(games: list[Minesweeper], model: TfKerasModel) -> np.ndarray:
-    model_inputs = [game.get_input_board().reshape(1, BOARD_SIZE, BOARD_SIZE, 5) for game in games]
+    model_inputs = [game.get_input_board().reshape(1, BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS) for game in games]
 
     actions = model.predict(np.vstack(model_inputs), verbose=0)
     reshaped = actions.reshape(len(games), BOARD_SIZE, BOARD_SIZE, 2)
@@ -136,7 +136,7 @@ def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tu
     return [(game.num_moves, game.get_game_state()) for game in games]
 
 def main():
-    offsets_to_load = 1
+    offsets_to_load = 2
 
     for offset in sorted(range(offsets_to_load), reverse=True):
         r = np.random.RandomState(2 ** 31 - 1)

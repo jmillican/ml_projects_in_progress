@@ -1,6 +1,6 @@
 from .play_game import decide_next_move_from_prediction, decide_next_move_with_rng, produce_model_predictions_batch
 from .model import load_latest_model, save_model, create_model
-from .minesweeper import Minesweeper, GameState, CellState, BOARD_SIZE
+from .minesweeper import Minesweeper, GameState, CellState, BOARD_SIZE, INPUT_CHANNELS
 from tqdm import tqdm
 import numpy as np
 import os
@@ -22,8 +22,8 @@ def main():
     # model = load_latest_model(verbose=True)
     
     model = create_model(
-        input_shape=(9, 9, 5,),
-        output_shape=(9, 9, 2,))
+        input_shape=(BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS,),
+        output_shape=(BOARD_SIZE, BOARD_SIZE, 2,))
     # Update learning rate for RL (lower than pre-training)
     tensorflow.keras.backend.set_value(
         model.optimizer.learning_rate,
@@ -172,8 +172,8 @@ def main():
         
         profile_start("Model Fit")
         model.fit(
-            np.array(boards).reshape(-1, 9, 9, 5),
-            np.array(target_vectors).reshape(-1, 9, 9, 2),
+            np.array(boards).reshape(-1, BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS),
+            np.array(target_vectors).reshape(-1, BOARD_SIZE, BOARD_SIZE, 2),
             epochs=1,
             verbose=1)
         profile_end("Model Fit")
