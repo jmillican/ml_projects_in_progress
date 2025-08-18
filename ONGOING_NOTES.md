@@ -554,3 +554,21 @@ Initial thoughts:
   - rl_model_25-08-18_21-02_iteration_270: {'wins': 853, 'losses': 4147, 'avg_moves_to_win': '25.72', 'avg_moves_to_lose': '14.42'}
 
 * Maybe I'll go back to a larger model.
+
+  - rl_model_25-08-18_21-06_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '1.29'}
+  - rl_model_25-08-18_21-09_iteration_30: {'wins': 70, 'losses': 4930, 'avg_moves_to_win': '21.26', 'avg_moves_to_lose': '9.11'}
+  - rl_model_25-08-18_21-12_iteration_60: {'wins': 224, 'losses': 4776, 'avg_moves_to_win': '23.92', 'avg_moves_to_lose': '10.71'}
+  - rl_model_25-08-18_21-16_iteration_90: {'wins': 539, 'losses': 4461, 'avg_moves_to_win': '24.95', 'avg_moves_to_lose': '12.27'}
+  - rl_model_25-08-18_22-10_iteration_550: {'wins': 3012, 'losses': 1988, 'avg_moves_to_win': '27.27', 'avg_moves_to_lose': '13.11'}
+  - rl_model_25-08-18_22-16_iteration_600: {'wins': 3041, 'losses': 1959, 'avg_moves_to_win': '27.44', 'avg_moves_to_lose': '13.17'}
+  - rl_model_25-08-18_22-33_iteration_750: {'wins': 3144, 'losses': 1856, 'avg_moves_to_win': '26.84', 'avg_moves_to_lose': '13.11'}
+  - rl_model_25-08-18_22-51_iteration_900: {'wins': 3212, 'losses': 1788, 'avg_moves_to_win': '26.97', 'avg_moves_to_lose': '13.10'}
+  - rl_model_25-08-18_23-10_iteration_1050: {'wins': 3242, 'losses': 1758, 'avg_moves_to_win': '26.78', 'avg_moves_to_lose': '13.09'}
+  - rl_model_25-08-18_23-29_iteration_1200: {'wins': 3289, 'losses': 1711, 'avg_moves_to_win': '26.72', 'avg_moves_to_lose': '12.97'}
+
+* While I'm at it, I might also try to learn to play Breakout. Seems both harder a game to play, but also potentially simpler to code in certain ways because the action space is much smaller.
+* OK so trying to run RL on this, I think the rewards are likely far too sparse to get much feedback quickly - especially because the whole thing is just much slower (although I should do some profiling to confirm that, as usual). I may need to be a bit more selective; and run through games - but cherry pick ones which have at least one reward in them to ensure that these games represent at least 50% of the samples I'm training on or so.
+
+* Anyway, back to minesweeper:
+  - rl_model_25-08-19_00-50_iteration_1800: {'wins': 3292, 'losses': 1708, 'avg_moves_to_win': '26.69', 'avg_moves_to_lose': '12.84'}
+* I think that training run may have reached its limit!

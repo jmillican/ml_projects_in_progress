@@ -9,7 +9,7 @@ models_dir = os.path.join(os.path.dirname(__file__), 'models')
 
 def loss_function(y_true, y_pred):
     """
-    Custom loss function that masks the loss for cells that are not visible.
+    Custom loss function that masks the loss for non-chosen actions.
     """
     mask = tf.cast(tf.not_equal(y_true, 0), tf.float32)  # Mask where y_true is not zero
     masked_loss = tf.reduce_mean(tf.square(y_true - y_pred) * mask)
@@ -21,11 +21,18 @@ def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) ->
     model = Sequential(
         [
             tf.keras.Input(shape=input_shape, name='input_layer'),  # type: ignore
-            Conv2D(32, (3, 3), activation='relu', padding='same', name='conv0'),
-            Conv2D(128, (5, 5), activation='relu', padding='same', name='conv1'),
-            Conv2D(64, (5, 5), activation='relu', padding='same', name='conv2'),
-            Conv2D(32, (3, 3), activation='relu', padding='same', name='conv3'),
-            Conv2D(2, (1, 1), activation='linear', padding='same', name='output_layer'),
+            # A few convolutional layers to extract features
+            # Starting with just a few filters, but leaking wide.
+            # Then expanding out to more filters, with a narrower field of view.
+            # Then compressing down to a smaller number of filters before we flatten and go dense.
+            Conv2D(32, (15, 15), activation='relu', padding='same', name='conv0'),
+            Conv2D(64, (11, 11), activation='relu', padding='same', name='conv1'),
+            Conv2D(96, (5, 5), activation='relu', padding='same', name='conv2'),
+            Conv2D(12, (5, 5), activation='relu', padding='same', name='conv3'),
+            Flatten(name='flatten'),
+            Dense(256, activation='relu', name='dense1'),
+            Dense(128, activation='relu', name='dense2'),
+            Dense(4, activation='linear', name='output_layer'),
         ]
     )
     # Use modern Adam optimizer with learning rate schedule
