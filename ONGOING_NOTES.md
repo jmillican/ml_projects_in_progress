@@ -572,3 +572,7 @@ Initial thoughts:
 * Anyway, back to minesweeper:
   - rl_model_25-08-19_00-50_iteration_1800: {'wins': 3292, 'losses': 1708, 'avg_moves_to_win': '26.69', 'avg_moves_to_lose': '12.84'}
 * I think that training run may have reached its limit!
+
+## 19-08-2025
+
+Quick thing that occurred to me regarding Breakout. I suspect the point above is extra important due to the risk of over-fitting. We likely need a somewhat diverse set of strategies leading to positive results in the training data.
