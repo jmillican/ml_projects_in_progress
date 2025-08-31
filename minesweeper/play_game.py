@@ -3,30 +3,43 @@ import numpy as np
 from .minesweeper import GameState, Minesweeper, CellState, BOARD_SIZE, INPUT_CHANNELS
 from .model import load_latest_model, load_model
 from .print_board import print_board
-import tensorflow as tf
-from tensorflow.keras import Model as TfKerasModel # type: ignore
+import torch
+import torch.nn as nn
 from tqdm import tqdm
 from .profile import profile_start, profile_end, print_profiles
-from .basic_config import suppress_tensorflow_logging, force_tensorflow_cpu
-
-suppress_tensorflow_logging()
-# force_tensorflow_cpu()
+# Device configuration for Apple Silicon
+device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
 
 
 models_dir = os.path.join(os.path.dirname(__file__), 'models')
 
-def produce_model_predictions(game: Minesweeper, model: TfKerasModel) -> np.ndarray:
+def produce_model_predictions(game: Minesweeper, model: nn.Module) -> np.ndarray:
     input_board = game.get_input_board()
-
+    
+    # Convert to PyTorch tensor and change from NHWC to NCHW format
     reshaped_input = input_board.reshape(1, BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS)
-    actions = model(reshaped_input, training=False).numpy()
+    tensor_input = torch.from_numpy(reshaped_input).float().permute(0, 3, 1, 2).to(device)
+    
+    with torch.no_grad():
+        actions = model(tensor_input)
+        # Convert back from NCHW to NHWC format
+        actions = actions.permute(0, 2, 3, 1).cpu().numpy()
+    
     reshaped = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
     return reshaped
 
-def produce_model_predictions_batch(games: list[Minesweeper], model: TfKerasModel) -> np.ndarray:
+def produce_model_predictions_batch(games: list[Minesweeper], model: nn.Module) -> np.ndarray:
     model_inputs = [game.get_input_board().reshape(1, BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS) for game in games]
-
-    actions = model.predict(np.vstack(model_inputs), verbose=0)
+    
+    # Stack inputs and convert to PyTorch tensor in NCHW format
+    stacked_inputs = np.vstack(model_inputs)
+    tensor_inputs = torch.from_numpy(stacked_inputs).float().permute(0, 3, 1, 2).to(device)
+    
+    with torch.no_grad():
+        actions = model(tensor_inputs)
+        # Convert back from NCHW to NHWC format
+        actions = actions.permute(0, 2, 3, 1).cpu().numpy()
+    
     reshaped = actions.reshape(len(games), BOARD_SIZE, BOARD_SIZE, 2)
     return reshaped
 
@@ -47,7 +60,7 @@ def decide_next_move_from_prediction(game: Minesweeper, actions: np.ndarray) -> 
 
     return result
 
-def decide_next_move_with_model(game: Minesweeper, model) -> tuple[int, int, CellState]:
+def decide_next_move_with_model(game: Minesweeper, model: nn.Module) -> tuple[int, int, CellState]:
     """
     Use the model to decide the next move based on the current game state.
     
@@ -93,7 +106,7 @@ def decide_next_move_with_rng(game: Minesweeper, rng: np.random.RandomState) -> 
 
     return row, col, state
 
-def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tuple[int, GameState]]:
+def play_games_with_model(game_seeds: list[int], model: nn.Module) -> list[tuple[int, GameState]]:
     """
     Play a Minesweeper game using the provided model to decide moves.
     
@@ -108,14 +121,13 @@ def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tu
         Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=game_seed)
         for game_seed in game_seeds
     ]
-    turn = 0
+    turn = 1
     num_running_games = len(games)
 
     LINE_UP = '\033[1A'
     LINE_CLEAR = '\x1b[2K'
 
     while num_running_games > 0:
-        turn += 1
         print(f" - Turn {turn}, Games left: {num_running_games}")
         predictions = produce_model_predictions_batch(games, model)
 
@@ -130,7 +142,9 @@ def play_games_with_model(game_seeds: list[int], model: TfKerasModel) -> list[tu
 
                 if game.get_game_state() != GameState.PLAYING:
                     num_running_games -= 1
+        turn += 1
         print(LINE_UP, end=LINE_CLEAR)
+
     print(f" - Turn {turn}, Games left: {num_running_games}")
 
     return [(game.num_moves, game.get_game_state()) for game in games]
@@ -142,6 +156,8 @@ def main():
         r = np.random.RandomState(2 ** 31 - 1)
         # Load the latest model chronologically from the models directory
         model, model_name = load_latest_model(offset=offset)
+        model = model.to(device)
+        model.eval()  # Set to evaluation mode
 
         # # Show model architecture and parameter count
         # print("\nModel Summary:")

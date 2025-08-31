@@ -43,6 +43,12 @@ def main():
         game = Minesweeper(rows=9, cols=9, mines=10, seed=game_seed)
         model, model_name = load_latest_model(offset=0)
         print(f"Loaded model: {model_name}")
+        
+        # Move model to appropriate device
+        import torch
+        device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
+        model = model.to(device)
+        model.eval()  # Set to evaluation mode
 
         print("Initial Board:")
         print_board(game)

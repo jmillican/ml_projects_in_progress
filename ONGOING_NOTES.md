@@ -576,3 +576,86 @@ Initial thoughts:
 ## 19-08-2025
 
 Quick thing that occurred to me regarding Breakout. I suspect the point above is extra important due to the risk of over-fitting. We likely need a somewhat diverse set of strategies leading to positive results in the training data.
+
+## 31-08-2025
+
+* Had a break from this while I had a bunch of personal commitments. Coming back to this and starting out by taking everyone's recomemndation to switch to PyTorch - which I'm trying with Minesweeper.
+* Got Claude Code to make the PyTorch change - which it seems to have mostly got right. First attempt didn't seem to be learning, so I bumped up the learning rate by 2 orders of magnitude, and it seems to be making some limited progress - at least going from 0 moves to lose to a positive number of moves.
+
+  - rl_model_25-08-31_10-57_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_10-58_iteration_10: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_10-58_iteration_20: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.04'}
+  - rl_model_25-08-31_10-59_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '4.28'}
+  - rl_model_25-08-31_11-01_iteration_60: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '4.51'}
+
+* PyTorch also seems to be a bit faster on inference, which is nice! I'm going to have to spend a bit more time understanding how to use it as it's syntactically a bit differently from TensorFlow + Keras.
+
+  - rl_model_25-08-31_11-03_iteration_90: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.80'}
+
+* OK so I might want to tweak the learning rate again. Or may need to examine the changes a bit deeper with more understanding; Claude Code may have got some parts of the migration wrong. First though, I'll try re-initialising the same model, in case it was just the random number lottery.
+
+  - rl_model_25-08-31_11-04_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_11-04_iteration_10: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_11-05_iteration_20: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.04'}
+  - rl_model_25-08-31_11-06_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '4.28'}
+  - rl_model_25-08-31_11-08_iteration_60: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '4.51'}
+  - rl_model_25-08-31_11-09_iteration_90: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.80'}
+
+* Trying again with a 10x lower learning rate. I don't think this will be enough to fix the lack of learning, but it's easy enough to try.
+
+  - rl_model_25-08-31_11-10_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_11-11_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_11-11_iteration_60: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_11-12_iteration_90: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+
+* Yeah that's clearly not enough. I probably have a more subtle difference or bug here.
+
+* Claude has suggested a number of things that might be the issue. I'm going to try tweaking the weight initialisation approach. If it is this then that's fascinating: I should actually spend some time learning about what these different weight initialisatino schemes are, and how they relate to activation functions.
+
+  - rl_model_25-08-31_11-33_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_11-33_iteration_10: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '8.00', 'avg_moves_to_lose': '2.83'}
+  - rl_model_25-08-31_11-34_iteration_20: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '15.00', 'avg_moves_to_lose': '3.60'}
+  - rl_model_25-08-31_11-34_iteration_30: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '4.00', 'avg_moves_to_lose': '4.25'}
+
+* OK so I'm not seeing phenomenal performance from this - but it does seem to be moving in the expected direction now. I also tweaked the learning rate decay, I should note, although I'd be surprised if that was having a huge effect this early on in the training.
+
+  - rl_model_25-08-31_11-36_iteration_60: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '4.01'}
+  - rl_model_25-08-31_11-38_iteration_90: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '2.46'}
+  - rl_model_25-08-31_11-49_iteration_270: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '3.31'}
+
+* Yup that's not working.
+* Claude also mentions training in smaller batches - e.g. of batches of size 32. I'll give this a go; although it intuitively feels small to me!
+* I'm also not bothering to save these intermediate models that don't work - there doesn't seem huge value in them, and they're quick enough to train.
+
+  - rl_model_25-08-31_11-57_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_11-58_iteration_10: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '1.79'}
+  - rl_model_25-08-31_11-58_iteration_20: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '1.79'}
+  - rl_model_25-08-31_11-58_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '1.79'}
+
+* OK the learning rate seems to be decaying way too fast. Iteration 41 got to learning rate 3.9064621064810585e-76! I'll change the learning rate decay from 0.99 to 0.999. A bit coarse - and maybe still too fast - but hopefully we'll see something a bit bettr.
+* Incidentally: it makes sense to see this in the learning rate; because optimizer.step() is decreasing it every time, and the batch size of 32 means we're doing this a *lot*!
+
+  - rl_model_25-08-31_12-01_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_12-02_iteration_10: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.38'}
+  - rl_model_25-08-31_12-02_iteration_20: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.27'}
+
+* Even with this, the learning rate has dropped to 3.318905888289442e-11 by iteration 23. No good.
+* Let's actually calculate this: if we want the learning rate to have dropped approximately 10x by iteration 600 (arbitrary, but hopefully long enough for it to have learned to play adequately well; and start fine-tuning its approach), we have approx 20k samples per iteration, and batches of 32; then that means we have want decay_rate ^ (600 * 20k / 32) = 0.1; so decay_rate = 0.1 ^ 1/(600 * 20k / 32) ~= 0.99999385979. Let's try that.
+
+  - rl_model_25-08-31_12-07_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_12-08_iteration_10: {'wins': 3, 'losses': 4997, 'avg_moves_to_win': '15.00', 'avg_moves_to_lose': '8.07'}
+  - rl_model_25-08-31_12-08_iteration_20: {'wins': 248, 'losses': 4752, 'avg_moves_to_win': '24.98', 'avg_moves_to_lose': '12.33'}
+  - rl_model_25-08-31_12-09_iteration_30: {'wins': 1357, 'losses': 3643, 'avg_moves_to_win': '28.00', 'avg_moves_to_lose': '13.99'}
+
+* Well... that's interesting. This seems to be by-far the fastest it's learned in all of my testing so far! I actually don't know how to account for that.. maybe the learning rate was decaying too fast in Tensorflow; or the batch size could have been larger; or someting else? I don't think the switch in framework should have directly changed that massively (especially given that I previously tweaked the initialisation to match Tensorflow's default approach); and Claude tells me that I'm not getting any changes in regularisation or normalisation so it seems likely that it was about the learning approach.
+
+  - rl_model_25-08-31_12-10_iteration_60: {'wins': 2425, 'losses': 2575, 'avg_moves_to_win': '27.76', 'avg_moves_to_lose': '14.63'}
+  - rl_model_25-08-31_12-12_iteration_90: {'wins': 2644, 'losses': 2356, 'avg_moves_to_win': '25.73', 'avg_moves_to_lose': '12.55'}
+  - rl_model_25-08-31_12-14_iteration_120: {'wins': 3055, 'losses': 1945, 'avg_moves_to_win': '23.26', 'avg_moves_to_lose': '12.72'}
+  - rl_model_25-08-31_12-16_iteration_150: {'wins': 3191, 'losses': 1809, 'avg_moves_to_win': '23.33', 'avg_moves_to_lose': '12.36'}
+  - rl_model_25-08-31_12-18_iteration_180: {'wins': 3524, 'losses': 1476, 'avg_moves_to_win': '23.19', 'avg_moves_to_lose': '12.61'}
+  - rl_model_25-08-31_12-19_iteration_210: {'wins': 3575, 'losses': 1425, 'avg_moves_to_win': '22.92', 'avg_moves_to_lose': '11.72'}
+  - rl_model_25-08-31_12-21_iteration_240: {'wins': 3687, 'losses': 1313, 'avg_moves_to_win': '23.56', 'avg_moves_to_lose': '11.48'}
+  - rl_model_25-08-31_12-23_iteration_270: {'wins': 3831, 'losses': 1169, 'avg_moves_to_win': '23.29', 'avg_moves_to_lose': '12.27'}
+  - rl_model_25-08-31_12-24_iteration_300: {'wins': 3858, 'losses': 1142, 'avg_moves_to_win': '23.09', 'avg_moves_to_lose': '11.31'}
+  - rl_model_25-08-31_12-27_iteration_350: {'wins': 4050, 'losses': 950, 'avg_moves_to_win': '24.49', 'avg_moves_to_lose': '11.61'}

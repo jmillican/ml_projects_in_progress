@@ -1,12 +1,12 @@
 from .play_game import decide_next_move_from_prediction, decide_next_move_with_rng, produce_model_predictions_batch
-from .model import load_latest_model, save_model, create_model
+from .model import load_latest_model, save_model, create_model, loss_function
 from .minesweeper import Minesweeper, GameState, CellState, BOARD_SIZE, INPUT_CHANNELS
 from tqdm import tqdm
 import numpy as np
-import os
-import tensorflow as tf
-from tensorflow.keras import Model as TfKerasModel  # type: ignore
-import tensorflow.keras # type: ignore
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.optim.lr_scheduler import ExponentialLR
 from .profile import profile_start, profile_end, get_profile, print_profiles
 from datetime import datetime
 from .print_board import print_board
@@ -22,8 +22,11 @@ LOSE_REWARD = -20.0
 WIN_REWARD = 20.0
 FLAG_MINE_REWARD = 0.0
 REVEAL_CELL_REWARD = 0.0
-INITIAL_LEARNING_RATE = 0.000001  # 1e-6, adjust as needed
-LEARNING_RATE_DECAY = 0.999
+INITIAL_LEARNING_RATE = 0.0001  # 1e-4, adjust as needed
+LEARNING_RATE_DECAY = 0.99999385979
+
+# Device configuration for Apple Silicon
+device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
 
 def main():
     # model = load_latest_model(verbose=True)
@@ -31,14 +34,17 @@ def main():
     model = create_model(
         input_shape=(BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS,),
         output_shape=(BOARD_SIZE, BOARD_SIZE, 2,))
+    model = model.to(device)
+    
+    # Initialize optimizer and scheduler
+    optimizer = optim.Adam(model.parameters(), lr=INITIAL_LEARNING_RATE)
+    scheduler = ExponentialLR(optimizer, gamma=LEARNING_RATE_DECAY)
 
     rng = np.random.RandomState(123456)  # Fixed seed for reproducibility
 
     if NUM_IN_RUN % BATCH_SIZE != 0:
         raise ValueError("NUM_IN_RUN must be divisible by BATCH_SIZE for this setup.")
     iterations = NUM_IN_RUN // BATCH_SIZE
-
-    learning_rate = INITIAL_LEARNING_RATE
     
     for rl_run in range(10000):
         profile_start("Overall RL Run")
@@ -56,7 +62,7 @@ def main():
 
             model_name = "rl_model_{}_iteration_{}".format(datetime.now().strftime('%y-%m-%d_%H-%M'), rl_run)
 
-            save_model(model, model_name)
+            save_model(model, model_name, optimizer=optimizer, epoch=rl_run)
         profile_end("Save Model")
 
         
@@ -70,6 +76,7 @@ def main():
             profile_end("Create Games")
 
             profile_start("Produce Predictions")
+            model.eval()  # Set to evaluation mode for predictions
             predictions = produce_model_predictions_batch(games, model)
             profile_end("Produce Predictions")
 
@@ -129,6 +136,7 @@ def main():
                     profile_end("Determine Rewards")
 
                 profile_start("Produce Predictions")
+                model.eval()  # Set to evaluation mode for predictions
                 predictions = produce_model_predictions_batch(games, model)
                 profile_end("Produce Predictions")
 
@@ -172,23 +180,39 @@ def main():
                 break
 
         print(f"Collected {len(boards)} training examples.")
-        print(f"Training with learning rate: {learning_rate}")
+        print(f"Training with learning rate: {optimizer.param_groups[0]['lr']}")
 
+        profile_start(f"Model Training")
+        
+        # Convert data to PyTorch tensors and move to device
+        X = torch.from_numpy(np.array(boards)).float().permute(0, 3, 1, 2).to(device)
+        y = torch.from_numpy(np.array(target_vectors)).float().permute(0, 3, 1, 2).to(device)
+        
+        # Training step
+        model.train()
 
-        # Update learning rate for RL (lower than pre-training)
-        tensorflow.keras.backend.set_value(
-            model.optimizer.learning_rate,
-            learning_rate
-        )
-        learning_rate *= LEARNING_RATE_DECAY
+        batch_size = 32
+        for i in range(0, len(X), batch_size):
+            batch_X = X[i:i+batch_size]
+            batch_y = y[i:i+batch_size]
+            optimizer.zero_grad()
+            
+            # Forward pass
+            outputs = model(batch_X)
 
-        profile_start(f"Model Fit")
-        model.fit(
-            np.array(boards).reshape(-1, BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS),
-            np.array(target_vectors).reshape(-1, BOARD_SIZE, BOARD_SIZE, 2),
-            epochs=1,
-            verbose=1)
-        profile_end("Model Fit")
+            # Compute loss using our custom loss function
+            loss = loss_function(batch_y, outputs)
+            
+            # Backward pass and optimization
+            loss.backward()
+            optimizer.step()
+            
+            # Update learning rate
+            scheduler.step()
+        
+            # print(f"Loss: {loss.item():.6f}")
+        
+        profile_end("Model Training")
 
         profile_end("Overall RL Run")
         print("\nProfiling stats:\n")
