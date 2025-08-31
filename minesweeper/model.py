@@ -39,7 +39,7 @@ class MinesweeperModel(nn.Module):
         return x
 
 def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) -> nn.Module:
-    torch.manual_seed(12345)
+    torch.manual_seed(123456)
     model = MinesweeperModel()
     return model
 

@@ -22,7 +22,7 @@ LOSE_REWARD = -20.0
 WIN_REWARD = 20.0
 FLAG_MINE_REWARD = 0.0
 REVEAL_CELL_REWARD = 0.0
-INITIAL_LEARNING_RATE = 0.0001  # 1e-4, adjust as needed
+INITIAL_LEARNING_RATE = 0.001  # 1e-3, adjust as needed
 LEARNING_RATE_DECAY = 0.99999385979
 
 # Device configuration for Apple Silicon

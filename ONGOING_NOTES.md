@@ -753,3 +753,28 @@ Quick thing that occurred to me regarding Breakout. I suspect the point above is
   - rl_model_25-08-31_15-13_iteration_2100: {'wins': 4176, 'losses': 824, 'avg_moves_to_win': '22.95', 'avg_moves_to_lose': '11.28'}
 
 * OK yeah, this hit a learning rate of 1.0247613610146132e-08, which I doubt is giving me anything meaningful at this point. I'm actually intrigued as to what happens if my learning rate starts off way higher - it feels like this might not go great, because I'm already getting decent results from the initialisation; but I'd like to try it out!
+
+  - rl_model_25-08-31_15-23_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '2.90'}
+  - rl_model_25-08-31_15-24_iteration_10: {'wins': 385, 'losses': 4615, 'avg_moves_to_win': '26.50', 'avg_moves_to_lose': '11.68'}
+  - rl_model_25-08-31_15-24_iteration_20: {'wins': 2044, 'losses': 2956, 'avg_moves_to_win': '29.97', 'avg_moves_to_lose': '13.75'}
+  - rl_model_25-08-31_15-25_iteration_30: {'wins': 2810, 'losses': 2190, 'avg_moves_to_win': '30.64', 'avg_moves_to_lose': '14.64'}
+  - rl_model_25-08-31_15-26_iteration_60: {'wins': 3050, 'losses': 1950, 'avg_moves_to_win': '27.61', 'avg_moves_to_lose': '12.13'}
+  - rl_model_25-08-31_15-28_iteration_90: {'wins': 2562, 'losses': 2438, 'avg_moves_to_win': '27.84', 'avg_moves_to_lose': '13.08'}
+  - rl_model_25-08-31_15-30_iteration_120: {'wins': 2789, 'losses': 2211, 'avg_moves_to_win': '27.98', 'avg_moves_to_lose': '14.21'}
+  - rl_model_25-08-31_15-32_iteration_150: {'wins': 3403, 'losses': 1597, 'avg_moves_to_win': '24.73', 'avg_moves_to_lose': '13.85'}
+  - rl_model_25-08-31_15-33_iteration_180: {'wins': 3722, 'losses': 1278, 'avg_moves_to_win': '26.05', 'avg_moves_to_lose': '12.19'}
+  - rl_model_25-08-31_15-35_iteration_210: {'wins': 3732, 'losses': 1268, 'avg_moves_to_win': '28.36', 'avg_moves_to_lose': '12.56'}
+  - rl_model_25-08-31_15-37_iteration_240: {'wins': 3923, 'losses': 1077, 'avg_moves_to_win': '25.74', 'avg_moves_to_lose': '11.13'}
+  - rl_model_25-08-31_15-39_iteration_270: {'wins': 3999, 'losses': 1001, 'avg_moves_to_win': '27.28', 'avg_moves_to_lose': '11.21'}
+  - rl_model_25-08-31_15-40_iteration_300: {'wins': 4022, 'losses': 978, 'avg_moves_to_win': '26.28', 'avg_moves_to_lose': '10.70'}
+  - rl_model_25-08-31_15-43_iteration_350: {'wins': 4180, 'losses': 820, 'avg_moves_to_win': '29.15', 'avg_moves_to_lose': '11.53'}
+  - rl_model_25-08-31_15-46_iteration_400: {'wins': 4130, 'losses': 870, 'avg_moves_to_win': '29.61', 'avg_moves_to_lose': '11.60'}
+  - rl_model_25-08-31_15-49_iteration_450: {'wins': 4125, 'losses': 875, 'avg_moves_to_win': '29.15', 'avg_moves_to_lose': '11.33'}
+  - rl_model_25-08-31_15-52_iteration_500: {'wins': 4135, 'losses': 865, 'avg_moves_to_win': '27.81', 'avg_moves_to_lose': '10.20'}
+  - rl_model_25-08-31_15-54_iteration_550: {'wins': 4172, 'losses': 828, 'avg_moves_to_win': '28.10', 'avg_moves_to_lose': '11.14'}
+  - rl_model_25-08-31_15-57_iteration_600: {'wins': 4227, 'losses': 773, 'avg_moves_to_win': '27.88', 'avg_moves_to_lose': '10.37'}
+  - rl_model_25-08-31_16-05_iteration_750: {'wins': 4175, 'losses': 825, 'avg_moves_to_win': '27.28', 'avg_moves_to_lose': '10.27'}
+  - rl_model_25-08-31_16-39_iteration_1350: {'wins': 4242, 'losses': 758, 'avg_moves_to_win': '27.10', 'avg_moves_to_lose': '9.72'}
+  - rl_model_25-08-31_16-47_iteration_1500: {'wins': 4257, 'losses': 743, 'avg_moves_to_win': '27.37', 'avg_moves_to_lose': '10.06'}
+
+* This was rather promising. I'll stop its trainig at this point, and consider approaches to improving it.
