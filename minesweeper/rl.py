@@ -11,12 +11,12 @@ from .profile import profile_start, profile_end, get_profile, print_profiles
 from datetime import datetime
 from .print_board import print_board
 
-discount_factor = 0.96  # Discount factor for future rewards
+discount_factor = 0.98  # Discount factor for future rewards
 RANDOM_PROBABILITY = 0.03  # Probability of making a random move instead of the model's prediction
 
 NUM_IN_RUN = 2000
 BATCH_SIZE = 200
-TARGET_SAMPLES_PER_ITERATION = 5000
+TARGET_SAMPLES_PER_ITERATION = 10000
 
 LOSE_REWARD = -20.0
 WIN_REWARD = 20.0
@@ -191,18 +191,31 @@ def main():
         # Training step
         model.train()
 
-        batch_size = 32
+        batch_size = 64
         for i in range(0, len(X), batch_size):
             batch_X = X[i:i+batch_size]
             batch_y = y[i:i+batch_size]
+
+            horiz_flipped_batch_X = batch_X.flip(dims=[-1])
+            horiz_flipped_batch_Y = batch_y.flip(dims=[-1])
+
+            vert_flipped_batch_X = batch_X.flip(dims=[-2])
+            vert_flipped_batch_Y = batch_y.flip(dims=[-2])
+
+            horiz_vert_flipped_batch_X = horiz_flipped_batch_X.flip(dims=[-2])
+            horiz_vert_flipped_batch_Y = horiz_flipped_batch_Y.flip(dims=[-2])
+
+            combined_batch_X = torch.cat([batch_X, horiz_flipped_batch_X, vert_flipped_batch_X, horiz_vert_flipped_batch_X], dim=0)
+            combined_batch_Y = torch.cat([batch_y, horiz_flipped_batch_Y, vert_flipped_batch_Y, horiz_vert_flipped_batch_Y], dim=0)
+
             optimizer.zero_grad()
             
             # Forward pass
-            outputs = model(batch_X)
+            outputs = model(combined_batch_X)
 
             # Compute loss using our custom loss function
-            loss = loss_function(batch_y, outputs)
-            
+            loss = loss_function(combined_batch_Y, outputs)
+
             # Backward pass and optimization
             loss.backward()
             optimizer.step()

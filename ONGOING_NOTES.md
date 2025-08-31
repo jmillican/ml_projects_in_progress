@@ -820,3 +820,27 @@ Quick thing that occurred to me regarding Breakout. I suspect the point above is
 
 * It's definitely promising that it's learning to survive longer, but this is learning quite slowly (albeit I did decrease the size of each run).
 * I'll give it another go, but go back to doing a little reward shaping I think.
+* Actually, maybe I won't do that, but I'll go back to slightly larger runs.
+
+  - rl_model_25-08-31_19-51_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.08'}
+  - rl_model_25-08-31_20-01_iteration_120: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.73'}
+  - rl_model_25-08-31_20-03_iteration_150: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.96'}
+  - rl_model_25-08-31_20-05_iteration_180: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.86'}
+  - rl_model_25-08-31_20-08_iteration_210: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.82'}
+  - rl_model_25-08-31_20-16_iteration_300: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.88'}
+  - rl_model_25-08-31_20-44_iteration_350: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '6.06'}
+  - rl_model_25-08-31_20-55_iteration_400: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.97'}
+  - rl_model_25-08-31_21-00_iteration_450: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '6.23'}
+
+* I'm gonna ditch this run, and start using the symmetries inherent in minesweeper. For each batch, we'll flip them horizontally, vertically and both - which will give us the two mirror images and the 180 degree rotation.
+
+  - rl_model_25-08-31_21-07_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.08'}
+  - rl_model_25-08-31_21-09_iteration_20: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.73'}
+  - rl_model_25-08-31_21-10_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.99'}
+  - rl_model_25-08-31_21-14_iteration_60: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.84'}
+  - rl_model_25-08-31_21-18_iteration_90: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.61'}
+  - rl_model_25-08-31_21-21_iteration_120: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.86'}
+  - rl_model_25-08-31_22-16_iteration_600: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '12.28'}
+  - rl_model_25-08-31_22-34_iteration_750: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '13.36'}
+
+* OK so this was fairly promising, but quite slow to train. I'm going to pause it for now; and then might come back to it but try initially training the network on smaller boards - only introducing the larger ones later on. Given that the network is fully convolutional, I think that should work.
