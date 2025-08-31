@@ -812,3 +812,11 @@ Quick thing that occurred to me regarding Breakout. I suspect the point above is
   - rl_model_25-08-31_18-53_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.80'}
 
 * Yeah this is painfully slow, I'll commit then shrink the model.
+
+  - rl_model_25-08-31_18-57_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.08'}
+  - rl_model_25-08-31_18-58_iteration_10: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.76'}
+  - rl_model_25-08-31_19-38_iteration_900: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '10.32'}
+  - rl_model_25-08-31_19-45_iteration_1050: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '11.21'}
+
+* It's definitely promising that it's learning to survive longer, but this is learning quite slowly (albeit I did decrease the size of each run).
+* I'll give it another go, but go back to doing a little reward shaping I think.
