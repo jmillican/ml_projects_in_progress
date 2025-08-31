@@ -659,3 +659,11 @@ Quick thing that occurred to me regarding Breakout. I suspect the point above is
   - rl_model_25-08-31_12-23_iteration_270: {'wins': 3831, 'losses': 1169, 'avg_moves_to_win': '23.29', 'avg_moves_to_lose': '12.27'}
   - rl_model_25-08-31_12-24_iteration_300: {'wins': 3858, 'losses': 1142, 'avg_moves_to_win': '23.09', 'avg_moves_to_lose': '11.31'}
   - rl_model_25-08-31_12-27_iteration_350: {'wins': 4050, 'losses': 950, 'avg_moves_to_win': '24.49', 'avg_moves_to_lose': '11.61'}
+  - rl_model_25-08-31_12-30_iteration_400: {'wins': 3988, 'losses': 1012, 'avg_moves_to_win': '23.73', 'avg_moves_to_lose': '10.64'}
+  - rl_model_25-08-31_12-34_iteration_450: {'wins': 4043, 'losses': 957, 'avg_moves_to_win': '25.07', 'avg_moves_to_lose': '11.24'}
+  - rl_model_25-08-31_12-37_iteration_500: {'wins': 4014, 'losses': 986, 'avg_moves_to_win': '24.86', 'avg_moves_to_lose': '11.07'}
+  - rl_model_25-08-31_12-40_iteration_550: {'wins': 4076, 'losses': 924, 'avg_moves_to_win': '24.67', 'avg_moves_to_lose': '10.78'}
+  - rl_model_25-08-31_12-43_iteration_600: {'wins': 4098, 'losses': 902, 'avg_moves_to_win': '24.65', 'avg_moves_to_lose': '10.78'}
+  - rl_model_25-08-31_12-52_iteration_750: {'wins': 4069, 'losses': 931, 'avg_moves_to_win': '25.18', 'avg_moves_to_lose': '10.16'}
+
+* The performance of this training run seems to have plateaued; but it's significantly out-performed any of my previous runs! I'll save this and try again - this time reverting the change to PyTorch's weight initialisations, as I suspet that my other changes were more relevant to the improved performance of the model.
