@@ -778,3 +778,29 @@ Quick thing that occurred to me regarding Breakout. I suspect the point above is
   - rl_model_25-08-31_16-47_iteration_1500: {'wins': 4257, 'losses': 743, 'avg_moves_to_win': '27.37', 'avg_moves_to_lose': '10.06'}
 
 * This was rather promising. I'll stop its trainig at this point, and consider approaches to improving it.
+* Maybe it's time to increase the model size, now that the previous one seemed to be learning pretty effectively and pretty quickly! I'll expand some of the convolutional layers, and add another layer in there.
+
+  - rl_model_25-08-31_16-53_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '4.51'}
+  - rl_model_25-08-31_16-54_iteration_10: {'wins': 790, 'losses': 4210, 'avg_moves_to_win': '27.49', 'avg_moves_to_lose': '14.93'}
+  - rl_model_25-08-31_16-55_iteration_20: {'wins': 2240, 'losses': 2760, 'avg_moves_to_win': '29.44', 'avg_moves_to_lose': '16.23'}
+
+* This does feel noticeably slower to actually run, but admittedly there's a fair bit more computation to do, so that makes sense. On the other hand, 790 wins after 10 iterations is very promising!
+
+  - rl_model_25-08-31_16-56_iteration_30: {'wins': 3127, 'losses': 1873, 'avg_moves_to_win': '29.71', 'avg_moves_to_lose': '14.90'}
+  - rl_model_25-08-31_16-58_iteration_60: {'wins': 3354, 'losses': 1646, 'avg_moves_to_win': '26.76', 'avg_moves_to_lose': '11.24'}
+  - rl_model_25-08-31_17-01_iteration_90: {'wins': 3478, 'losses': 1522, 'avg_moves_to_win': '24.79', 'avg_moves_to_lose': '11.10'}
+  - rl_model_25-08-31_17-04_iteration_120: {'wins': 3336, 'losses': 1664, 'avg_moves_to_win': '25.23', 'avg_moves_to_lose': '12.13'}
+  - rl_model_25-08-31_17-14_iteration_240: {'wins': 3704, 'losses': 1296, 'avg_moves_to_win': '25.10', 'avg_moves_to_lose': '11.72'}
+  - rl_model_25-08-31_17-17_iteration_270: {'wins': 3723, 'losses': 1277, 'avg_moves_to_win': '24.27', 'avg_moves_to_lose': '11.21'}
+  - rl_model_25-08-31_17-19_iteration_300: {'wins': 4033, 'losses': 967, 'avg_moves_to_win': '23.87', 'avg_moves_to_lose': '10.28'}
+  - rl_model_25-08-31_17-24_iteration_350: {'wins': 4025, 'losses': 975, 'avg_moves_to_win': '27.07', 'avg_moves_to_lose': '11.00'}
+  - rl_model_25-08-31_17-33_iteration_450: {'wins': 4159, 'losses': 841, 'avg_moves_to_win': '29.14', 'avg_moves_to_lose': '10.74'}
+  - rl_model_25-08-31_17-38_iteration_500: {'wins': 3883, 'losses': 1117, 'avg_moves_to_win': '29.33', 'avg_moves_to_lose': '8.80'}
+  - rl_model_25-08-31_17-42_iteration_550: {'wins': 3915, 'losses': 1085, 'avg_moves_to_win': '28.81', 'avg_moves_to_lose': '7.78'}
+  - rl_model_25-08-31_17-47_iteration_600: {'wins': 4214, 'losses': 786, 'avg_moves_to_win': '29.33', 'avg_moves_to_lose': '9.94'}
+  - rl_model_25-08-31_18-00_iteration_750: {'wins': 4063, 'losses': 937, 'avg_moves_to_win': '30.06', 'avg_moves_to_lose': '8.45'}
+  - rl_model_25-08-31_18-13_iteration_900: {'wins': 4238, 'losses': 762, 'avg_moves_to_win': '29.74', 'avg_moves_to_lose': '9.65'}
+  - rl_model_25-08-31_18-26_iteration_1050: {'wins': 4245, 'losses': 755, 'avg_moves_to_win': '29.67', 'avg_moves_to_lose': '9.24'}
+  - rl_model_25-08-31_18-39_iteration_1200: {'wins': 4251, 'losses': 749, 'avg_moves_to_win': '29.63', 'avg_moves_to_lose': '9.47'}
+
+* OK this didn't seem to really perform better than the previous, smaller model. I'm tempted to have a go at a much larger Minesweeper board. Seems like 16x30 with 99 mines is a typical hard board, so I'll try that out.
