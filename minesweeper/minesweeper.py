@@ -13,11 +13,13 @@ class GameState(Enum):
     WON = 1
     LOST = 2
 
-BOARD_SIZE = 9
+BOARD_ROWS = 16
+BOARD_COLS = 30
+BOARD_MINES = 99
 INPUT_CHANNELS = 6
 
 class Minesweeper:
-    def __init__(self, rows: int = BOARD_SIZE, cols: int = BOARD_SIZE, mines: int = 10, seed: Optional[int] = None):
+    def __init__(self, rows: int = BOARD_ROWS, cols: int = BOARD_COLS, mines: int = BOARD_MINES, seed: Optional[int] = None):
         """
         Initialize a new Minesweeper game.
         

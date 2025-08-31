@@ -804,3 +804,11 @@ Quick thing that occurred to me regarding Breakout. I suspect the point above is
   - rl_model_25-08-31_18-39_iteration_1200: {'wins': 4251, 'losses': 749, 'avg_moves_to_win': '29.63', 'avg_moves_to_lose': '9.47'}
 
 * OK this didn't seem to really perform better than the previous, smaller model. I'm tempted to have a go at a much larger Minesweeper board. Seems like 16x30 with 99 mines is a typical hard board, so I'll try that out.
+* That is quite slow, which makes sense - far more parameters. I might reduce the batch sizes for each iteration.
+
+  - rl_model_25-08-31_18-50_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.02'}
+  - rl_model_25-08-31_18-51_iteration_10: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.27'}
+  - rl_model_25-08-31_18-52_iteration_20: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.74'}
+  - rl_model_25-08-31_18-53_iteration_30: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '5.80'}
+
+* Yeah this is painfully slow, I'll commit then shrink the model.

@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from .minesweeper import GameState, Minesweeper, CellState, BOARD_SIZE, INPUT_CHANNELS
+from .minesweeper import GameState, Minesweeper, CellState, BOARD_ROWS, BOARD_COLS, BOARD_MINES, INPUT_CHANNELS
 from .model import load_latest_model, load_model
 from .print_board import print_board
 import torch
@@ -17,20 +17,20 @@ def produce_model_predictions(game: Minesweeper, model: nn.Module) -> np.ndarray
     input_board = game.get_input_board()
     
     # Convert to PyTorch tensor and change from NHWC to NCHW format
-    reshaped_input = input_board.reshape(1, BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS)
+    reshaped_input = input_board.reshape(1, BOARD_ROWS, BOARD_COLS, INPUT_CHANNELS)
     tensor_input = torch.from_numpy(reshaped_input).float().permute(0, 3, 1, 2).to(device)
     
     with torch.no_grad():
         actions = model(tensor_input)
         # Convert back from NCHW to NHWC format
         actions = actions.permute(0, 2, 3, 1).cpu().numpy()
-    
-    reshaped = actions.reshape(BOARD_SIZE, BOARD_SIZE, 2)
+
+    reshaped = actions.reshape(BOARD_ROWS, BOARD_COLS, 2)
     return reshaped
 
 def produce_model_predictions_batch(games: list[Minesweeper], model: nn.Module) -> np.ndarray:
-    model_inputs = [game.get_input_board().reshape(1, BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS) for game in games]
-    
+    model_inputs = [game.get_input_board().reshape(1, BOARD_ROWS, BOARD_COLS, INPUT_CHANNELS) for game in games]
+
     # Stack inputs and convert to PyTorch tensor in NCHW format
     stacked_inputs = np.vstack(model_inputs)
     tensor_inputs = torch.from_numpy(stacked_inputs).float().permute(0, 3, 1, 2).to(device)
@@ -39,8 +39,8 @@ def produce_model_predictions_batch(games: list[Minesweeper], model: nn.Module) 
         actions = model(tensor_inputs)
         # Convert back from NCHW to NHWC format
         actions = actions.permute(0, 2, 3, 1).cpu().numpy()
-    
-    reshaped = actions.reshape(len(games), BOARD_SIZE, BOARD_SIZE, 2)
+
+    reshaped = actions.reshape(len(games), BOARD_ROWS, BOARD_COLS, 2)
     return reshaped
 
 def decide_next_move_from_prediction(game: Minesweeper, actions: np.ndarray) -> tuple[int, int, CellState]:
@@ -86,19 +86,19 @@ def decide_next_move_with_rng(game: Minesweeper, rng: np.random.RandomState) -> 
         A tuple containing the row, column, and cell state (REVEALED or FLAGGED).
     """
     visible_board = game.get_visible_board()
-    row = rng.randint(0, BOARD_SIZE)
-    col = rng.randint(0, BOARD_SIZE)
+    row = rng.randint(0, BOARD_ROWS)
+    col = rng.randint(0, BOARD_COLS)
 
     while visible_board[row, col] != -1:  # Find a hidden cell
-        row = rng.randint(0, BOARD_SIZE)
-        col = rng.randint(0, BOARD_SIZE)
+        row = rng.randint(0, BOARD_ROWS)
+        col = rng.randint(0, BOARD_COLS)
 
     # Figure out the proportion of remaining cells that are mines.
     remaining_cells = np.sum(visible_board == -1)
     remaining_mines = game.get_remaining_mines()
     mine_proportion = remaining_mines / remaining_cells
 
-    if remaining_cells == BOARD_SIZE * BOARD_SIZE:
+    if remaining_cells == BOARD_ROWS * BOARD_COLS:
         # If all cells are hidden, any will work.
         state = CellState.REVEALED
     else:
@@ -118,7 +118,7 @@ def play_games_with_model(game_seeds: list[int], model: nn.Module) -> list[tuple
         A tuple containing the number of moves made and the final game state.
     """
     games = [
-        Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=game_seed)
+        Minesweeper(rows=BOARD_ROWS, cols=BOARD_COLS, mines=BOARD_MINES, seed=game_seed)
         for game_seed in game_seeds
     ]
     turn = 1

@@ -1,6 +1,6 @@
 from .play_game import decide_next_move_from_prediction, decide_next_move_with_rng, produce_model_predictions_batch
 from .model import load_latest_model, save_model, create_model, loss_function
-from .minesweeper import Minesweeper, GameState, CellState, BOARD_SIZE, INPUT_CHANNELS
+from .minesweeper import Minesweeper, GameState, CellState, BOARD_ROWS, BOARD_COLS, BOARD_MINES, INPUT_CHANNELS
 from tqdm import tqdm
 import numpy as np
 import torch
@@ -14,9 +14,9 @@ from .print_board import print_board
 discount_factor = 0.96  # Discount factor for future rewards
 RANDOM_PROBABILITY = 0.03  # Probability of making a random move instead of the model's prediction
 
-NUM_IN_RUN = 5000
-BATCH_SIZE = 1000
-TARGET_SAMPLES_PER_ITERATION = 20000
+NUM_IN_RUN = 2000
+BATCH_SIZE = 200
+TARGET_SAMPLES_PER_ITERATION = 5000
 
 LOSE_REWARD = -20.0
 WIN_REWARD = 20.0
@@ -32,8 +32,8 @@ def main():
     # model = load_latest_model(verbose=True)
     
     model = create_model(
-        input_shape=(BOARD_SIZE, BOARD_SIZE, INPUT_CHANNELS,),
-        output_shape=(BOARD_SIZE, BOARD_SIZE, 2,))
+        input_shape=(BOARD_ROWS, BOARD_COLS, INPUT_CHANNELS,),
+        output_shape=(BOARD_ROWS, BOARD_COLS, 2,))
     model = model.to(device)
     
     # Initialize optimizer and scheduler
@@ -70,7 +70,7 @@ def main():
         for batch_num in tqdm(range(iterations)):
             profile_start("Create Games")
             games = [
-                Minesweeper(rows=BOARD_SIZE, cols=BOARD_SIZE, mines=10, seed=rng.randint(2**32 - 1))
+                Minesweeper(rows=BOARD_ROWS, cols=BOARD_COLS, mines=BOARD_MINES, seed=rng.randint(2**32 - 1))
                 for _ in range(BATCH_SIZE)
             ]
             profile_end("Create Games")
@@ -163,7 +163,7 @@ def main():
 
                     profile_start("Store Target Vector and Input Board")
                     boards.append(start_input_boards[i])
-                    target_vector = np.zeros((BOARD_SIZE, BOARD_SIZE, 2), dtype=np.float32)
+                    target_vector = np.zeros((BOARD_ROWS, BOARD_COLS, 2), dtype=np.float32)
                     if states[i] == CellState.REVEALED:
                         target_vector[rows[i], cols[i], 0] = target  # Reward for revealing a cell
                     elif states[i] == CellState.FLAGGED:
