@@ -217,3 +217,7 @@ minesweeper/rl_training_data_old/*
 
 # macOS
 .DS_Store
+
+
+# Ignore spider directory for now while I iterate a bit more.
+spider/*
