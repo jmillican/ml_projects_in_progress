@@ -23,12 +23,12 @@ class MinesweeperModel(nn.Module):
         self.conv3 = nn.Conv2d(64, 32, kernel_size=3, padding=1)
         self.output_layer = nn.Conv2d(32, 2, kernel_size=1, padding=0)
         
-        # Initialize weights using Xavier/Glorot initialization (like TensorFlow's default)
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.xavier_uniform_(m.weight)
-                if m.bias is not None:
-                    nn.init.zeros_(m.bias)
+        # # Initialize weights using Xavier/Glorot initialization (like TensorFlow's default)
+        # for m in self.modules():
+        #     if isinstance(m, nn.Conv2d):
+        #         nn.init.xavier_uniform_(m.weight)
+        #         if m.bias is not None:
+        #             nn.init.zeros_(m.bias)
         
     def forward(self, x):
         x = torch.relu(self.conv0(x))
@@ -39,7 +39,7 @@ class MinesweeperModel(nn.Module):
         return x
 
 def create_model(input_shape: tuple[int, ...], output_shape: tuple[int, ...]) -> nn.Module:
-    torch.manual_seed(1234)
+    torch.manual_seed(12345)
     model = MinesweeperModel()
     return model
 

@@ -667,3 +667,89 @@ Quick thing that occurred to me regarding Breakout. I suspect the point above is
   - rl_model_25-08-31_12-52_iteration_750: {'wins': 4069, 'losses': 931, 'avg_moves_to_win': '25.18', 'avg_moves_to_lose': '10.16'}
 
 * The performance of this training run seems to have plateaued; but it's significantly out-performed any of my previous runs! I'll save this and try again - this time reverting the change to PyTorch's weight initialisations, as I suspet that my other changes were more relevant to the improved performance of the model.
+
+  - rl_model_25-08-31_12-55_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_12-56_iteration_10: {'wins': 8, 'losses': 4992, 'avg_moves_to_win': '15.62', 'avg_moves_to_lose': '7.89'}
+  - rl_model_25-08-31_12-56_iteration_20: {'wins': 163, 'losses': 4837, 'avg_moves_to_win': '22.87', 'avg_moves_to_lose': '9.58'}
+  - rl_model_25-08-31_12-57_iteration_30: {'wins': 249, 'losses': 4751, 'avg_moves_to_win': '24.90', 'avg_moves_to_lose': '10.34'}
+  - rl_model_25-08-31_12-58_iteration_60: {'wins': 1166, 'losses': 3834, 'avg_moves_to_win': '27.37', 'avg_moves_to_lose': '13.93'}
+  - rl_model_25-08-31_13-00_iteration_90: {'wins': 2520, 'losses': 2480, 'avg_moves_to_win': '28.16', 'avg_moves_to_lose': '14.60'}
+  - rl_model_25-08-31_13-01_iteration_120: {'wins': 3141, 'losses': 1859, 'avg_moves_to_win': '28.28', 'avg_moves_to_lose': '14.73'}
+  - rl_model_25-08-31_13-03_iteration_150: {'wins': 3380, 'losses': 1620, 'avg_moves_to_win': '28.04', 'avg_moves_to_lose': '14.65'}
+  - rl_model_25-08-31_13-04_iteration_180: {'wins': 3123, 'losses': 1877, 'avg_moves_to_win': '27.50', 'avg_moves_to_lose': '11.65'}
+  - rl_model_25-08-31_13-06_iteration_210: {'wins': 3097, 'losses': 1903, 'avg_moves_to_win': '26.74', 'avg_moves_to_lose': '12.14'}
+  - rl_model_25-08-31_13-08_iteration_240: {'wins': 3252, 'losses': 1748, 'avg_moves_to_win': '26.58', 'avg_moves_to_lose': '12.46'}
+  - rl_model_25-08-31_13-09_iteration_270: {'wins': 3342, 'losses': 1658, 'avg_moves_to_win': '25.35', 'avg_moves_to_lose': '12.34'}
+  - rl_model_25-08-31_13-11_iteration_300: {'wins': 3306, 'losses': 1694, 'avg_moves_to_win': '24.97', 'avg_moves_to_lose': '12.21'}
+
+* This seems to have plateaued. I'll try it again, just in case it's the initialisation lottery.
+  - rl_model_25-08-31_13-14_iteration_0: {'wins': 0, 'losses': 5000, 'avg_moves_to_win': '0.00', 'avg_moves_to_lose': '0.00'}
+  - rl_model_25-08-31_13-14_iteration_10: {'wins': 8, 'losses': 4992, 'avg_moves_to_win': '15.62', 'avg_moves_to_lose': '7.89'}
+  - rl_model_25-08-31_13-15_iteration_20: {'wins': 163, 'losses': 4837, 'avg_moves_to_win': '22.87', 'avg_moves_to_lose': '9.58'}
+
+* Oops. There's a fixed seed value in model.py, so this is just learning the same model (because all of the RL numbers are also seeded PRNGs too). Let's tweak the seed!
+  - rl_model_25-08-31_13-16_iteration_0: {'wins': 1, 'losses': 4999, 'avg_moves_to_win': '7.00', 'avg_moves_to_lose': '4.69'}
+  - rl_model_25-08-31_13-16_iteration_10: {'wins': 98, 'losses': 4902, 'avg_moves_to_win': '19.66', 'avg_moves_to_lose': '9.61'}
+  - rl_model_25-08-31_13-17_iteration_20: {'wins': 166, 'losses': 4834, 'avg_moves_to_win': '22.80', 'avg_moves_to_lose': '10.37'}
+  - rl_model_25-08-31_13-17_iteration_30: {'wins': 340, 'losses': 4660, 'avg_moves_to_win': '24.04', 'avg_moves_to_lose': '11.59'}
+
+* This reminds me actually, I should probably also be a bit careful about using different game initialisations etc. Currently my RL is all seeded on exactly the same games, and the same moments to take a random move (which will be seeded from the same numbers) - which has the slight potential to mess things up if I happen to not have a great set of games being played for some reason. It may make sense for me to eventually migrate this all into a high-level framework where the RL look is agnostic to the model and the specific game; and where all randomness is ultimately seeded from one place, so each tweak to that can flow through to randomising everything else.
+
+  - rl_model_25-08-31_13-19_iteration_60: {'wins': 1731, 'losses': 3269, 'avg_moves_to_win': '28.22', 'avg_moves_to_lose': '15.39'}
+  - rl_model_25-08-31_13-20_iteration_90: {'wins': 2623, 'losses': 2377, 'avg_moves_to_win': '27.29', 'avg_moves_to_lose': '15.44'}
+  - rl_model_25-08-31_13-22_iteration_120: {'wins': 2827, 'losses': 2173, 'avg_moves_to_win': '27.16', 'avg_moves_to_lose': '15.07'}
+  - rl_model_25-08-31_13-24_iteration_150: {'wins': 3146, 'losses': 1854, 'avg_moves_to_win': '25.83', 'avg_moves_to_lose': '14.91'}
+  - rl_model_25-08-31_13-25_iteration_180: {'wins': 2929, 'losses': 2071, 'avg_moves_to_win': '25.87', 'avg_moves_to_lose': '13.80'}
+  - rl_model_25-08-31_13-27_iteration_210: {'wins': 2993, 'losses': 2007, 'avg_moves_to_win': '27.15', 'avg_moves_to_lose': '14.12'}
+  - rl_model_25-08-31_13-29_iteration_240: {'wins': 3324, 'losses': 1676, 'avg_moves_to_win': '24.42', 'avg_moves_to_lose': '12.50'}
+  - rl_model_25-08-31_13-30_iteration_270: {'wins': 3407, 'losses': 1593, 'avg_moves_to_win': '24.20', 'avg_moves_to_lose': '12.04'}
+  - rl_model_25-08-31_13-32_iteration_300: {'wins': 3748, 'losses': 1252, 'avg_moves_to_win': '23.18', 'avg_moves_to_lose': '11.19'}
+  - rl_model_25-08-31_13-35_iteration_350: {'wins': 3819, 'losses': 1181, 'avg_moves_to_win': '23.09', 'avg_moves_to_lose': '10.64'}
+  - rl_model_25-08-31_13-37_iteration_400: {'wins': 3929, 'losses': 1071, 'avg_moves_to_win': '22.71', 'avg_moves_to_lose': '10.91'}
+  - rl_model_25-08-31_13-40_iteration_450: {'wins': 4060, 'losses': 940, 'avg_moves_to_win': '22.87', 'avg_moves_to_lose': '11.89'}
+  - rl_model_25-08-31_13-42_iteration_500: {'wins': 4108, 'losses': 892, 'avg_moves_to_win': '23.48', 'avg_moves_to_lose': '11.57'}
+  - rl_model_25-08-31_13-45_iteration_550: {'wins': 4110, 'losses': 890, 'avg_moves_to_win': '22.64', 'avg_moves_to_lose': '10.80'}
+
+* OK this is concerning. I've been trying to test this on the same games when I run play_game.py; but when I expanded it out to 100,000 games, I got 'wins': 28080, 'losses': 71920. That's a 28% win rate, as opposed to what looked like an 80% win rate in the data above. I worry that this might mean there's some over-fitting going on. I should examine this: I don't *think* that I was training the model on the same set of games that I'm testing it on (and I thought that each run of the RL loop was creating a different set of random games); but this result alarms me a bit.
+
+  - rl_model_25-08-31_13-48_iteration_600: {'wins': 4144, 'losses': 856, 'avg_moves_to_win': '22.70', 'avg_moves_to_lose': '10.74'}
+  - rl_model_25-08-31_13-57_iteration_750: {'wins': 4149, 'losses': 851, 'avg_moves_to_win': '22.42', 'avg_moves_to_lose': '10.99'}
+
+* So debugging this, I'll run the 100,000 runs in four batches of 25,000:
+    - rl_model_25-08-31_13-57_iteration_750: {'wins': 20665, 'losses': 4335, 'avg_moves_to_win': '22.36', 'avg_moves_to_lose': '10.88'}
+    - rl_model_25-08-31_13-57_iteration_750: {'wins': 20600, 'losses': 4400, 'avg_moves_to_win': '22.26', 'avg_moves_to_lose': '10.62'}
+    - rl_model_25-08-31_13-57_iteration_750: {'wins': 20693, 'losses': 4307, 'avg_moves_to_win': '22.34', 'avg_moves_to_lose': '11.02'}
+    - rl_model_25-08-31_13-57_iteration_750: {'wins': 20711, 'losses': 4289, 'avg_moves_to_win': '22.29', 'avg_moves_to_lose': '10.87'}
+  ...but for a run of these same 100,000 seeds all in one batch:
+    - rl_model_25-08-31_13-57_iteration_750: {'wins': 28545, 'losses': 71455, 'avg_moves_to_win': '22.33', 'avg_moves_to_lose': '4.77'}
+  ...so there's something wrong with the testing approach. My mind immediately jumps to perhaps there being some bug in the inference when it gets too-large batches (whether this is in software or hardware I don't know); but to be fair I might just be exhibiting a bias towards assuming that somebody else's engineering is wrong and mine is correct.. which I should not assume. For now I'll continue working with smaller batches, as I feel medium-confident that they're working correctly, but I should spend some time understanding what's likely going wrong here.
+
+  - rl_model_25-08-31_14-06_iteration_900: {'wins': 4160, 'losses': 840, 'avg_moves_to_win': '22.78', 'avg_moves_to_lose': '11.16'}
+
+* This seems to have plateaued in performance. I'll give it a little while to keep training while I have to step away for a bit, but I should probably move on to some alternative tweaks, or indeed go back to Coursera and keep being taught!
+
+  - rl_model_25-08-31_14-14_iteration_1050: {'wins': 4161, 'losses': 839, 'avg_moves_to_win': '23.02', 'avg_moves_to_lose': '11.11'}
+  - rl_model_25-08-31_14-22_iteration_1200: {'wins': 4184, 'losses': 816, 'avg_moves_to_win': '22.91', 'avg_moves_to_lose': '10.92'}
+
+* Continuing with the debugging from above, let's try to roughly binary search where the discrepancy seems to occur:
+    - 50k:
+      rl_model_25-08-31_14-22_iteration_1200: {'wins': 41483, 'losses': 8517, 'avg_moves_to_win': '22.76', 'avg_moves_to_lose': '10.91'}
+    - 75k:
+      rl_model_25-08-31_14-22_iteration_1200: {'wins': 7915, 'losses': 67085, 'avg_moves_to_win': '22.79', 'avg_moves_to_lose': '4.39'}
+    - 62.5k:
+      rl_model_25-08-31_14-22_iteration_1200: {'wins': 51859, 'losses': 10641, 'avg_moves_to_win': '22.76', 'avg_moves_to_lose': '10.90'}
+    - 69k:
+      rl_model_25-08-31_14-22_iteration_1200: {'wins': 2900, 'losses': 66100, 'avg_moves_to_win': '22.85', 'avg_moves_to_lose': '4.29'}
+    - 66k:
+      rl_model_25-08-31_14-22_iteration_1200: {'wins': 381, 'losses': 65619, 'avg_moves_to_win': '22.44', 'avg_moves_to_lose': '4.24'}
+    - 64k:
+      rl_model_25-08-31_14-22_iteration_1200: {'wins': 53109, 'losses': 10891, 'avg_moves_to_win': '22.76', 'avg_moves_to_lose': '10.88'}
+    - 65k:
+      rl_model_25-08-31_14-22_iteration_1200: {'wins': 53960, 'losses': 11040, 'avg_moves_to_win': '22.76', 'avg_moves_to_lose': '10.86'}
+    ..seems that maybe there's been a known issue with this historically on Apple Silicon https://medium.com/@beppe2hd/dont-mess-with-pytorch-and-apple-mps-45a547dba052. That was with an earlier version of PyTorch, but I wonder if it's a similar situation.
+
+  - rl_model_25-08-31_14-32_iteration_1350: {'wins': 4146, 'losses': 854, 'avg_moves_to_win': '22.92', 'avg_moves_to_lose': '10.99'}
+  - rl_model_25-08-31_14-41_iteration_1500: {'wins': 4153, 'losses': 847, 'avg_moves_to_win': '23.01', 'avg_moves_to_lose': '11.28'}
+  - rl_model_25-08-31_15-13_iteration_2100: {'wins': 4176, 'losses': 824, 'avg_moves_to_win': '22.95', 'avg_moves_to_lose': '11.28'}
+
+* OK yeah, this hit a learning rate of 1.0247613610146132e-08, which I doubt is giving me anything meaningful at this point. I'm actually intrigued as to what happens if my learning rate starts off way higher - it feels like this might not go great, because I'm already getting decent results from the initialisation; but I'd like to try it out!
